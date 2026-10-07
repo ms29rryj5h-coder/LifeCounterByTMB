@@ -1,7 +1,7 @@
 {
-  "name": "Magical Brick Lebenspunkte",
-  "short_name": "Lebenspunkte",
-  "description": "Lebenspunkte, Commander-Schaden und Zähler für Commander-Runden – The Magical Brick",
+  "name": "LifeCounterByTMB",
+  "short_name": "LifeCounter",
+  "description": "LifeCounter by The Magical Brick – Lebenspunkte, Commander-Schaden und Zähler für Commander-Runden",
   "lang": "de",
   "start_url": "./",
   "scope": "./",

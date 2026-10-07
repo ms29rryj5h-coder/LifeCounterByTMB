@@ -1,4 +1,6 @@
-# Lebenspunkte · The Magical Brick
+# LifeCounterByTMB
+
+LifeCounter by The Magical Brick.
 
 Lebenspunkte-Zähler für Commander-Runden, gedacht für den NFC-Tag im Commander-Rahmen der Deckbox „The Magical Brick“.
 
