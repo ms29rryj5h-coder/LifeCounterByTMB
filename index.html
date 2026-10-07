@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14110e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lebenspunkte">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>Magical Brick Lebenspunkte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap">
+<style>
+/* Tischansicht: Handy liegt in der Mitte, jedes Spielerfeld zeigt zu seinem Platz; Menue aus dem goldenen Stein in der Mitte. */
+:root{
+  --ground:#14110e;      /* Tisch, warmes Schwarz der Box */
+  --ink:#f1e8d6;         /* Schrift, Pergament */
+  --ink-dim:#b9ad97;
+  --gold:#d9a441;        /* Akzent der Box */
+  --line:#3a3229;
+  --sheet:#1d1914;
+  --danger:#e0604f;
+  --ok:#8fbf6a;
+  --f-num:"Big Shoulders Display","Arial Narrow",Impact,system-ui,sans-serif;
+  --f-ui:"Barlow Semi Condensed","Arial Narrow",system-ui,-apple-system,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{height:100%;box-sizing:border-box}
+body{height:100%;margin:0;background:var(--ground);color:var(--ink);font-family:var(--f-ui);overflow:hidden;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+#tisch{position:relative;height:100%;display:grid;gap:4px;padding:4px}
+.feld{position:relative;overflow:hidden;border-radius:14px;touch-action:manipulation;min-width:0;min-height:0}
+.innen{position:absolute;left:50%;top:50%;display:flex;flex-direction:column;padding:10px 14px}
+.kopf{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;z-index:3;pointer-events:none}
+.kopf .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.marke{display:inline-flex;align-items:center;gap:3px;font-size:12px;padding:1px 6px;border-radius:99px;background:rgba(0,0,0,.35);color:var(--gold)}
+.marke svg{width:12px;height:12px}
+.mitte{flex:1;display:flex;align-items:center;justify-content:center;position:relative;min-height:0}
+.leben{font-family:var(--f-num);font-weight:800;line-height:.85;font-variant-numeric:tabular-nums;letter-spacing:-.01em;text-shadow:0 2px 0 rgba(0,0,0,.25);pointer-events:none;z-index:2}
+.delta{position:absolute;top:6%;font-family:var(--f-num);font-weight:600;font-size:22px;color:var(--ink);opacity:0;transition:opacity .25s;pointer-events:none;z-index:2}
+.delta.an{opacity:.9}
+.tap{position:absolute;top:0;bottom:0;width:50%;display:flex;align-items:center;font-family:var(--f-num);font-size:34px;font-weight:600;color:rgba(241,232,214,.45);z-index:1}
+.tap.minus{left:0;justify-content:flex-start;padding-left:4%}
+.tap.plus{right:0;justify-content:flex-end;padding-right:4%}
+.tap:active{background:rgba(255,255,255,.06)}
+.fuss{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;z-index:3}
+.chip{font-size:13px;font-weight:600;letter-spacing:.03em;padding:4px 9px;border-radius:99px;background:rgba(0,0,0,.32);color:var(--ink);white-space:nowrap}
+.chip b{font-family:var(--f-num);font-size:15px;font-weight:800;margin-left:3px}
+.chip.warn{background:var(--danger);color:#1b0f0c}
+.raus{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:rgba(10,8,6,.62);pointer-events:none}
+.raus strong{font-family:var(--f-num);font-weight:800;font-size:26px;letter-spacing:.06em;text-transform:uppercase;color:var(--danger)}
+.raus span{font-size:14px;color:var(--ink-dim)}
+
+/* Detailblatt eines Spielers, im Feld mitgedreht */
+.blatt{position:absolute;inset:0;z-index:6;background:var(--sheet);display:flex;flex-direction:column;padding:10px 12px;gap:8px;overflow:auto}
+.blatt h3{margin:0;font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.blatt .oben{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.zeile{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--line)}
+.zeile .lbl{display:flex;align-items:center;gap:6px;min-width:0;font-size:15px}
+.zeile .lbl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.punkt{width:10px;height:10px;border-radius:50%;flex:none}
+.zahl{display:flex;align-items:center;gap:4px}
+.zahl output{min-width:2.2em;text-align:center;font-family:var(--f-num);font-weight:800;font-size:22px;font-variant-numeric:tabular-nums}
+.zahl output.tot{color:var(--danger)}
+.knopf{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.07);font-family:var(--f-num);font-size:22px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+.knopf:active{background:rgba(255,255,255,.16)}
+.hinweis{font-size:12px;color:var(--ink-dim)}
+.reihe{display:flex;gap:6px;flex-wrap:wrap}
+.pille{padding:7px 12px;border-radius:99px;background:rgba(255,255,255,.07);font-size:14px;font-weight:600}
+.pille[aria-pressed="true"]{background:var(--gold);color:#1b140a}
+.fertig{padding:8px 14px;border-radius:10px;background:var(--gold);color:#1b140a;font-weight:600;font-size:15px}
+
+/* Goldener Stein in der Mitte */
+#stein{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:8;width:58px;height:40px;border-radius:7px;
+  background:linear-gradient(180deg,#e6b55a,#b8862f);box-shadow:0 0 0 4px var(--ground),0 3px 10px rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center}
+#stein svg{width:30px;height:20px}
+
+/* Menue */
+#menue{position:fixed;inset:0;z-index:20;background:rgba(8,6,5,.72);display:flex;justify-content:center;align-items:flex-end}
+#menue .karte{width:min(100%,560px);max-height:92%;overflow:auto;background:var(--sheet);border-radius:18px 18px 0 0;
+  padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
+#menue header{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+#menue h2{margin:0;font-family:var(--f-num);font-weight:800;font-size:28px;letter-spacing:.02em;text-wrap:balance}
+#menue h2 small{display:block;font-family:var(--f-ui);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+.gruppe{display:flex;flex-direction:column;gap:8px}
+.gruppe > label,.gruppe > .t{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{min-width:44px;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.07);font-family:var(--f-num);font-weight:800;font-size:20px}
+.seg button[aria-pressed="true"]{background:var(--gold);color:#1b140a}
+.namen{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 8px;align-items:center}
+.namen input{width:100%;min-width:0;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:#16120e;color:var(--ink);font:inherit;font-size:16px;-webkit-user-select:text;user-select:text}
+.farbe{width:30px;height:30px;border-radius:8px;border:2px solid rgba(255,255,255,.25)}
+.schalter{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}
+.schalter button{width:52px;height:30px;border-radius:99px;background:#3a3229;position:relative;flex:none}
+.schalter button::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:var(--ink-dim);transition:transform .15s}
+.schalter button[aria-pressed="true"]{background:var(--gold)}
+.schalter button[aria-pressed="true"]::after{transform:translateX(22px);background:#1b140a}
+.aktionen{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.aktionen button{padding:11px 12px;border-radius:12px;background:rgba(255,255,255,.07);font-weight:600;font-size:15px;text-align:left}
+.aktionen button.gefahr{background:rgba(224,96,79,.18);color:#f3b2a8}
+.aktionen button.gefahr.sicher{background:var(--danger);color:#1b0f0c}
+#ergebnis{min-height:46px;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:#16120e;font-size:15px}
+#ergebnis b{font-family:var(--f-num);font-weight:800;font-size:30px;color:var(--gold)}
+.klein{font-size:12px;color:var(--ink-dim);line-height:1.4}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<main id="tisch" aria-label="Spieltisch"></main>
+<button id="stein" type="button" aria-label="Menü öffnen">
+  <svg viewBox="0 0 30 20" aria-hidden="true"><rect x="1" y="1" width="28" height="18" rx="2" fill="none" stroke="#1b140a" stroke-width="2"/><path d="M1 10h28M15 1v9M8 10v9M22 10v9" stroke="#1b140a" stroke-width="2"/></svg>
+</button>
+
+<div id="menue" hidden>
+  <div class="karte" role="dialog" aria-modal="true" aria-labelledby="mtitel">
+    <header>
+      <h2 id="mtitel"><small>The Magical Brick</small>Lebenspunkte</h2>
+      <button class="fertig" id="zu" type="button">Zum Tisch</button>
+    </header>
+    <div class="gruppe"><span class="t">Spieler</span><div class="seg" id="anzahl"></div></div>
+    <div class="gruppe"><span class="t">Startleben</span><div class="seg" id="start"></div></div>
+    <div class="gruppe"><span class="t">Namen und Farben</span><div class="namen" id="namen"></div></div>
+    <div class="gruppe">
+      <div class="schalter"><span>Commander-Schaden zieht Leben ab</span><button type="button" id="cmdleben" aria-label="Commander-Schaden zieht Leben ab"></button></div>
+      <div class="schalter"><span>Bildschirm anlassen</span><button type="button" id="wach" aria-label="Bildschirm anlassen"></button></div>
+    </div>
+    <div class="gruppe"><span class="t">Würfeln</span>
+      <div class="aktionen">
+        <button type="button" data-wurf="6">W6 werfen</button>
+        <button type="button" data-wurf="20">W20 werfen</button>
+        <button type="button" data-wurf="2">Münze werfen</button>
+        <button type="button" data-wurf="start">Startspieler losen</button>
+      </div>
+      <div id="ergebnis" aria-live="polite"><span class="klein">Ergebnis erscheint hier.</span></div>
+    </div>
+    <div class="gruppe"><span class="t">Spiel</span>
+      <div class="aktionen">
+        <button type="button" id="undo">Letzte Änderung zurück</button>
+        <button type="button" id="voll">Vollbild</button>
+        <button type="button" id="neu" class="gefahr">Neues Spiel</button>
+      </div>
+    </div>
+    <p class="klein">Tippen links zieht einen Lebenspunkt ab, rechts gibt einen dazu. Gedrückt halten zählt weiter. Die Leiste unten im Feld öffnet Commander-Schaden, Gift, Steuer und mehr. Der Spielstand bleibt nur auf diesem Gerät.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var FARBEN=["#c8963a","#a23f35","#2f7f7b","#4d6aa0","#7b8a3e","#7f4b7d"];
+var NAMEN=["Spieler 1","Spieler 2","Spieler 3","Spieler 4","Spieler 5","Spieler 6"];
+var KEY="tmb-lebenspunkte-v1";
+var KRONE='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 9l1-6 2.5 3L6 2l1.5 4L10 3l1 6z" fill="currentColor"/></svg>';
+var FACKEL='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1c1.5 1.6 2.4 3 1 4.6C6.6 4.8 6 4.6 5.6 5c-.8.8-.5 1.7.4 2H4c-1.2-1.6-.3-3.6 2-6zM4.5 8h3L7 11H5z" fill="currentColor"/></svg>';
+
+function spieler(i,leben){return {id:"p"+i+"-"+Math.random().toString(36).slice(2,7),name:NAMEN[i],farbe:FARBEN[i],leben:leben,gift:0,energie:0,erfahrung:0,steuer:0,partner:false,cmd:{}};}
+function neuerZustand(n,leben){var s={n:n,start:leben,cmdLeben:true,monarch:null,initiative:null,spieler:[]};for(var i=0;i<6;i++)s.spieler.push(spieler(i,leben));return s;}
+
+function laden(){
+  try{var t=localStorage.getItem(KEY);if(t){var s=JSON.parse(t);if(s&&s.spieler&&s.spieler.length===6)return s;}}catch(e){}
+  var n=4,l=40;
+  try{var q=new URLSearchParams(location.search);var qn=parseInt(q.get("spieler"),10),ql=parseInt(q.get("leben"),10);if(qn>=2&&qn<=6)n=qn;if(ql>0&&ql<1000)l=ql;}catch(e){}
+  return neuerZustand(n,l);
+}
+var S=laden();
+var verlauf=[];var letzteAenderung=0;
+function speichern(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function merken(buendeln){var jetzt=Date.now();if(buendeln&&jetzt-letzteAenderung<1500){letzteAenderung=jetzt;return;}letzteAenderung=jetzt;verlauf.push(JSON.stringify(S));if(verlauf.length>80)verlauf.shift();}
+function aktive(){return S.spieler.slice(0,S.n);}
+function quellen(){var q=[];aktive().forEach(function(p){q.push({key:p.id+":a",p:p,teil:p.partner?"A":""});if(p.partner)q.push({key:p.id+":b",p:p,teil:"B"});});return q;}
+function raus(p){
+  if(p.leben<=0)return"Keine Lebenspunkte mehr";
+  if(p.gift>=10)return"10 Giftmarken";
+  for(var k in p.cmd){if(p.cmd[k]>=21){var src=quellen().filter(function(q){return q.key===k;})[0];return"21 Commander-Schaden"+(src?" von "+src.p.name+(src.teil?" "+src.teil:""):"");}}
+  return"";
+}
+function mischen(hex,anteil){var c=parseInt(hex.slice(1),16),r=c>>16,g=c>>8&255,b=c&255,br=20,bg=17,bb=14;
+  function m(a,z){return Math.round(z+(a-z)*anteil);}return"rgb("+m(r,br)+","+m(g,bg)+","+m(b,bb)+")";}
+
+/* Sitzordnung: Handy liegt in der Mitte; links sitzende Spieler sehen ihr Feld um 90 Grad gedreht, rechts um 270, oben um 180 */
+function sitze(n){
+  var L={2:{c:1,r:2,s:[[1,1,1,180],[2,1,1,0]]},
+         3:{c:2,r:2,s:[[1,1,2,180],[2,1,1,90],[2,2,1,270]]},
+         4:{c:2,r:2,s:[[1,1,1,90],[2,1,1,90],[2,2,1,270],[1,2,1,270]]},
+         5:{c:2,r:3,s:[[1,1,2,180],[2,1,1,90],[3,1,1,90],[3,2,1,270],[2,2,1,270]]},
+         6:{c:2,r:3,s:[[1,1,1,90],[2,1,1,90],[3,1,1,90],[3,2,1,270],[2,2,1,270],[1,2,1,270]]}};
+  return L[n];
+}
+
+var tisch=document.getElementById("tisch");
+var felder=[];var offenesBlatt=null;var deltas={};
+var ro=("ResizeObserver" in window)?new ResizeObserver(function(es){es.forEach(function(e){groesse(e.target);});}):null;
+
+function groesse(f){
+  var w=f.clientWidth,h=f.clientHeight,rot=+f.dataset.rot,innen=f.querySelector(".innen");if(!innen)return;
+  var quer=(rot===90||rot===270);var iw=quer?h:w,ih=quer?w:h;
+  innen.style.width=iw+"px";innen.style.height=ih+"px";
+  innen.style.transform="translate(-50%,-50%) rotate("+rot+"deg)";
+  var z=innen.querySelector(".leben");if(z){var gr=Math.min(ih*0.55,iw*0.42);z.style.fontSize=Math.max(40,gr)+"px";}
+}
+
+function aufbauen(){
+  var L=sitze(S.n);offenesBlatt=null;tisch.innerHTML="";felder=[];
+  tisch.style.gridTemplateColumns="repeat("+L.c+",minmax(0,1fr))";tisch.style.gridTemplateRows="repeat("+L.r+",minmax(0,1fr))";
+  aktive().forEach(function(p,i){
+    var s=L.s[i];var f=document.createElement("section");f.className="feld";f.dataset.rot=s[3];f.dataset.i=i;
+    f.style.gridRow=s[0];f.style.gridColumn=s[1]+" / span "+s[2];
+    f.setAttribute("aria-label",p.name);
+    f.innerHTML='<div class="innen"><div class="kopf"><span class="name"></span><span class="marken"></span></div>'+
+      '<div class="mitte"><button class="tap minus" type="button" aria-label="Ein Leben abziehen">−</button><span class="delta"></span><span class="leben"></span><button class="tap plus" type="button" aria-label="Ein Leben dazu">+</button></div>'+
+      '<div class="fuss"></div><div class="raus" hidden><strong>Ausgeschieden</strong><span></span></div></div>';
+    tisch.appendChild(f);felder.push(f);
+    halten(f.querySelector(".minus"),i,-1);halten(f.querySelector(".plus"),i,1);
+    if(ro)ro.observe(f);
+  });
+  felder.forEach(groesse);zeichnen();
+}
+
+function zeichnen(){
+  aktive().forEach(function(p,i){
+    var f=felder[i];if(!f)return;
+    f.style.background="linear-gradient(160deg,"+mischen(p.farbe,.62)+","+mischen(p.farbe,.38)+")";
+    f.querySelector(".name").textContent=p.name;
+    var m="";if(S.monarch===p.id)m+='<span class="marke">'+KRONE+'Monarch</span>';if(S.initiative===p.id)m+='<span class="marke">'+FACKEL+'Initiative</span>';
+    f.querySelector(".marken").innerHTML=m;
+    f.querySelector(".leben").textContent=p.leben;
+    var cmdMax=0;for(var k in p.cmd)cmdMax=Math.max(cmdMax,p.cmd[k]);
+    var fuss=f.querySelector(".fuss");
+    fuss.innerHTML='<button type="button" class="chip'+(cmdMax>=21?' warn':'')+'" data-blatt="'+i+'">Commander<b>'+cmdMax+'</b></button>'+
+      (p.gift?'<button type="button" class="chip'+(p.gift>=10?' warn':'')+'" data-blatt="'+i+'">Gift<b>'+p.gift+'</b></button>':'')+
+      (p.steuer?'<button type="button" class="chip" data-blatt="'+i+'">Steuer<b>+'+(2*p.steuer)+'</b></button>':'')+
+      (p.energie?'<button type="button" class="chip" data-blatt="'+i+'">Energie<b>'+p.energie+'</b></button>':'')+
+      (p.erfahrung?'<button type="button" class="chip" data-blatt="'+i+'">Erfahrung<b>'+p.erfahrung+'</b></button>':'')+
+      '<button type="button" class="chip" data-blatt="'+i+'">Mehr</button>';
+    var d=deltas[p.id],de=f.querySelector(".delta");
+    if(d&&d.wert){de.textContent=(d.wert>0?"+":"−")+Math.abs(d.wert);de.classList.add("an");}else{de.classList.remove("an");}
+    var grund=raus(p),r=f.querySelector(".raus");r.hidden=!grund;r.querySelector("span").textContent=grund;
+    if(offenesBlatt===i)blattFuellen(i);
+  });
+  speichern();
+}
+
+function leben(i,d){
+  var p=S.spieler[i];merken(true);p.leben+=d;
+  var dd=deltas[p.id]||(deltas[p.id]={wert:0,t:0});dd.wert+=d;clearTimeout(dd.t);
+  dd.t=setTimeout(function(){dd.wert=0;zeichnen();},1800);
+  zeichnen();
+}
+function halten(btn,i,d){
+  var t1=0,t2=0;
+  function stop(){clearTimeout(t1);clearInterval(t2);t1=t2=0;}
+  btn.addEventListener("pointerdown",function(e){e.preventDefault();stop();leben(i,d);
+    t1=setTimeout(function(){var n=0;t2=setInterval(function(){n++;leben(i,n>12?d*5:d);},140);},450);});
+  ["pointerup","pointerleave","pointercancel"].forEach(function(ev){btn.addEventListener(ev,stop);});
+  btn.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();leben(i,d);}});
+  btn.addEventListener("click",function(e){e.preventDefault();});
+}
+
+/* Detailblatt */
+tisch.addEventListener("click",function(e){
+  var c=e.target.closest("[data-blatt]");if(c){blattOeffnen(+c.dataset.blatt);return;}
+  var a=e.target.closest("[data-akt]");if(a){blattAktion(a);}
+});
+function blattOeffnen(i){
+  blattSchliessen();offenesBlatt=i;var f=felder[i];var b=document.createElement("div");b.className="blatt";
+  f.querySelector(".innen").appendChild(b);blattFuellen(i);
+}
+function blattSchliessen(){if(offenesBlatt===null)return;var f=felder[offenesBlatt];var b=f&&f.querySelector(".blatt");if(b)b.remove();offenesBlatt=null;}
+function zeile(lbl,farbe,akt,wert,tot,i,key){
+  return '<div class="zeile"><div class="lbl">'+(farbe?'<span class="punkt" style="background:'+farbe+'"></span>':'')+'<span>'+lbl+'</span></div>'+
+    '<div class="zahl"><button type="button" class="knopf" data-akt="'+akt+'" data-i="'+i+'" data-k="'+(key||"")+'" data-d="-1" aria-label="'+lbl+' minus eins">−</button>'+
+    '<output class="'+(tot?'tot':'')+'">'+wert+'</output>'+
+    '<button type="button" class="knopf" data-akt="'+akt+'" data-i="'+i+'" data-k="'+(key||"")+'" data-d="1" aria-label="'+lbl+' plus eins">+</button></div></div>';
+}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+function blattFuellen(i){
+  var f=felder[i];var b=f&&f.querySelector(".blatt");if(!b)return;var p=S.spieler[i];
+  var h='<div class="oben"><h3>'+esc(p.name)+'</h3><button type="button" class="fertig" data-akt="zu">Fertig</button></div>';
+  h+='<h3>Commander-Schaden erhalten</h3>';
+  var qs=quellen().filter(function(q){return q.p.id!==p.id;});
+  if(!qs.length)h+='<p class="hinweis">Keine Gegner im Spiel.</p>';
+  qs.forEach(function(q){var v=p.cmd[q.key]||0;h+=zeile(esc(q.p.name)+(q.teil?" · "+q.teil:""),q.p.farbe,"cmd",v,v>=21,i,q.key);});
+  h+='<p class="hinweis">Ab 21 Schaden von einem Commander ist man raus.'+(S.cmdLeben?' Der Schaden wird auch vom Leben abgezogen.':'')+'</p>';
+  h+='<h3>Zähler</h3>';
+  h+=zeile("Gift",null,"gift",p.gift,p.gift>=10,i);
+  h+=zeile("Commander gewirkt (Steuer +"+(2*p.steuer)+")",null,"steuer",p.steuer,false,i);
+  h+=zeile("Energie",null,"energie",p.energie,false,i);
+  h+=zeile("Erfahrung",null,"erfahrung",p.erfahrung,false,i);
+  h+='<div class="reihe">'+
+     '<button type="button" class="pille" data-akt="monarch" data-i="'+i+'" aria-pressed="'+(S.monarch===p.id)+'">Monarch</button>'+
+     '<button type="button" class="pille" data-akt="initiative" data-i="'+i+'" aria-pressed="'+(S.initiative===p.id)+'">Initiative</button>'+
+     '<button type="button" class="pille" data-akt="partner" data-i="'+i+'" aria-pressed="'+p.partner+'">Partner-Commander</button></div>';
+  b.innerHTML=h;
+}
+function blattAktion(a){
+  var akt=a.dataset.akt;if(akt==="zu"){blattSchliessen();return;}
+  var i=+a.dataset.i,p=S.spieler[i],d=+a.dataset.d||0;merken(false);
+  if(akt==="cmd"){var k=a.dataset.k,alt=p.cmd[k]||0,neu=Math.max(0,alt+d);p.cmd[k]=neu;if(S.cmdLeben)p.leben-=(neu-alt);}
+  else if(akt==="gift"||akt==="steuer"||akt==="energie"||akt==="erfahrung"){p[akt]=Math.max(0,p[akt]+d);}
+  else if(akt==="monarch"||akt==="initiative"){S[akt]=(S[akt]===p.id)?null:p.id;}
+  else if(akt==="partner"){p.partner=!p.partner;if(!p.partner){S.spieler.forEach(function(o){delete o.cmd[p.id+":b"];});}}
+  zeichnen();
+}
+
+/* Menue */
+var menue=document.getElementById("menue");
+document.getElementById("stein").addEventListener("click",function(){blattSchliessen();menueFuellen();menue.hidden=false;document.getElementById("zu").focus();});
+document.getElementById("zu").addEventListener("click",function(){menue.hidden=true;});
+menue.addEventListener("click",function(e){if(e.target===menue)menue.hidden=true;});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!menue.hidden)menue.hidden=true;else blattSchliessen();}});
+function seg(el,werte,aktuell,fn){el.innerHTML="";werte.forEach(function(v){var b=document.createElement("button");b.type="button";b.textContent=v;b.setAttribute("aria-pressed",String(v===aktuell));b.addEventListener("click",function(){fn(v);});el.appendChild(b);});}
+function menueFuellen(){
+  seg(document.getElementById("anzahl"),[2,3,4,5,6],S.n,function(v){merken(false);S.n=v;aufbauen();menueFuellen();});
+  seg(document.getElementById("start"),[20,30,40],S.start,function(v){S.start=v;speichern();menueFuellen();ergebnis("Startleben "+v+" gilt ab dem nächsten neuen Spiel.");});
+  var nm=document.getElementById("namen");nm.innerHTML="";
+  aktive().forEach(function(p,i){
+    var fb=document.createElement("button");fb.type="button";fb.className="farbe";fb.style.background=p.farbe;fb.setAttribute("aria-label","Farbe von "+p.name+" wechseln");
+    fb.addEventListener("click",function(){p.farbe=FARBEN[(FARBEN.indexOf(p.farbe)+1)%FARBEN.length];fb.style.background=p.farbe;zeichnen();});
+    var inp=document.createElement("input");inp.id="name-"+i;inp.value=p.name;inp.maxLength=18;inp.setAttribute("aria-label","Name Spieler "+(i+1));
+    inp.addEventListener("input",function(){p.name=inp.value||NAMEN[i];zeichnen();});
+    var lv=document.createElement("span");lv.className="klein";lv.textContent=p.leben+" LP";
+    nm.appendChild(fb);nm.appendChild(inp);nm.appendChild(lv);
+  });
+  document.getElementById("cmdleben").setAttribute("aria-pressed",String(S.cmdLeben));
+  document.getElementById("wach").setAttribute("aria-pressed",String(!!sperre));
+  var neu=document.getElementById("neu");neu.classList.remove("sicher");neu.textContent="Neues Spiel";
+}
+document.getElementById("cmdleben").addEventListener("click",function(){S.cmdLeben=!S.cmdLeben;speichern();menueFuellen();});
+document.getElementById("undo").addEventListener("click",function(){var t=verlauf.pop();if(t){S=JSON.parse(t);aufbauen();menueFuellen();ergebnis("Letzte Änderung zurückgenommen.");}else{ergebnis("Nichts mehr zum Zurücknehmen.");}});
+document.getElementById("neu").addEventListener("click",function(){
+  var b=this;if(!b.classList.contains("sicher")){b.classList.add("sicher");b.textContent="Wirklich? Nochmal tippen";return;}
+  merken(false);var alt=S;S=neuerZustand(alt.n,alt.start);S.cmdLeben=alt.cmdLeben;
+  S.spieler.forEach(function(p,i){p.name=alt.spieler[i].name;p.farbe=alt.spieler[i].farbe;});
+  deltas={};aufbauen();menueFuellen();ergebnis("Neues Spiel mit "+S.start+" Leben.");
+});
+document.getElementById("voll").addEventListener("click",function(){var el=document.documentElement;try{if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen().catch(function(){ergebnis("Vollbild ist hier nicht verfügbar.");});else ergebnis("Vollbild ist hier nicht verfügbar.");}catch(e){ergebnis("Vollbild ist hier nicht verfügbar.");}});
+function ergebnis(html){document.getElementById("ergebnis").innerHTML=html;}
+function zufall(n){if(window.crypto&&crypto.getRandomValues){var a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n;}return Math.floor(Math.random()*n);}
+Array.prototype.forEach.call(document.querySelectorAll("[data-wurf]"),function(b){b.addEventListener("click",function(){
+  var w=b.dataset.wurf;
+  if(w==="2")ergebnis("Münze: <b>"+(zufall(2)?"Kopf":"Zahl")+"</b>");
+  else if(w==="start"){var p=aktive()[zufall(S.n)];ergebnis('<span class="punkt" style="background:'+p.farbe+'"></span>Es beginnt <b>'+esc(p.name)+'</b>');}
+  else ergebnis("W"+w+": <b>"+(1+zufall(+w))+"</b>");
+});});
+
+/* Bildschirm wach halten */
+var sperre=null;
+function wachAn(){if(!("wakeLock" in navigator)){ergebnis("Dieses Gerät erlaubt das Wachhalten nicht.");return Promise.resolve();}
+  return navigator.wakeLock.request("screen").then(function(s){sperre=s;s.addEventListener("release",function(){sperre=null;menueFuellen();});menueFuellen();}).catch(function(){sperre=null;ergebnis("Wachhalten wurde abgelehnt.");menueFuellen();});}
+document.getElementById("wach").addEventListener("click",function(){if(sperre){sperre.release();sperre=null;try{localStorage.removeItem(KEY+"-wach");}catch(e){}menueFuellen();}else{try{localStorage.setItem(KEY+"-wach","1");}catch(e){}wachAn();}});
+document.addEventListener("visibilitychange",function(){var w=false;try{w=localStorage.getItem(KEY+"-wach")==="1";}catch(e){}if(document.visibilityState==="visible"&&w&&!sperre)wachAn();});
+tisch.addEventListener("pointerdown",function once(){var w=false;try{w=localStorage.getItem(KEY+"-wach")==="1";}catch(e){}if(w&&!sperre)wachAn();},{once:true});
+
+window.addEventListener("resize",function(){felder.forEach(groesse);});
+aufbauen();
+if("serviceWorker" in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{navigator.serviceWorker.register("sw.js").catch(function(){});}catch(e){}}
+})();
+</script>
+
+</body>
+</html>
