@@ -97,6 +97,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .seg{display:flex;gap:6px;flex-wrap:wrap}
 .seg button{min-width:44px;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.07);font-family:var(--f-num);font-weight:800;font-size:20px}
 .seg button[aria-pressed="true"]{background:var(--gold);color:#1b140a}
+.seg.sprachen button{font-family:var(--f-ui);font-weight:600;font-size:15px;padding:9px 14px}
 .namen{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 8px;align-items:center}
 .namen input{width:100%;min-width:0;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:#16120e;color:var(--ink);font:inherit;font-size:16px;-webkit-user-select:text;user-select:text}
 .farbe{width:30px;height:30px;border-radius:8px;border:2px solid rgba(255,255,255,.25)}
@@ -117,8 +118,8 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 
 </head>
 <body>
-<main id="tisch" aria-label="Spieltisch"></main>
-<button id="stein" type="button" aria-label="Menü öffnen">
+<main id="tisch" aria-label="Spieltisch" data-t-aria="tisch"></main>
+<button id="stein" type="button" aria-label="Menü öffnen" data-t-aria="menueAuf">
   <svg viewBox="0 0 30 20" aria-hidden="true"><rect x="1" y="1" width="28" height="18" rx="2" fill="none" stroke="#1b140a" stroke-width="2"/><path d="M1 10h28M15 1v9M8 10v9M22 10v9" stroke="#1b140a" stroke-width="2"/></svg>
 </button>
 
@@ -126,32 +127,33 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
   <div class="karte" role="dialog" aria-modal="true" aria-labelledby="mtitel">
     <header>
       <h2 id="mtitel"><small>by The Magical Brick</small>LifeCounter</h2>
-      <button class="fertig" id="zu" type="button">Zum Tisch</button>
+      <button class="fertig" id="zu" type="button" data-t="zumTisch">Zum Tisch</button>
     </header>
-    <div class="gruppe"><span class="t">Spieler</span><div class="seg" id="anzahl"></div></div>
-    <div class="gruppe"><span class="t">Startleben</span><div class="seg" id="start"></div></div>
-    <div class="gruppe"><span class="t">Namen und Farben</span><div class="namen" id="namen"></div></div>
+    <div class="gruppe"><span class="t" data-t="sprache">Sprache</span><div class="seg sprachen" id="sprache"></div></div>
+    <div class="gruppe"><span class="t" data-t="anzahl">Spieler</span><div class="seg" id="anzahl"></div></div>
+    <div class="gruppe"><span class="t" data-t="start">Startleben</span><div class="seg" id="start"></div></div>
+    <div class="gruppe"><span class="t" data-t="namen">Namen und Farben</span><div class="namen" id="namen"></div></div>
     <div class="gruppe">
-      <div class="schalter"><span>Commander-Schaden zieht Leben ab</span><button type="button" id="cmdleben" aria-label="Commander-Schaden zieht Leben ab"></button></div>
-      <div class="schalter"><span>Bildschirm anlassen</span><button type="button" id="wach" aria-label="Bildschirm anlassen"></button></div>
+      <div class="schalter"><span data-t="cmdLeben">Commander-Schaden zieht Leben ab</span><button type="button" id="cmdleben" aria-label="Commander-Schaden zieht Leben ab" data-t-aria="cmdLeben"></button></div>
+      <div class="schalter"><span data-t="wach">Bildschirm anlassen</span><button type="button" id="wach" aria-label="Bildschirm anlassen" data-t-aria="wach"></button></div>
     </div>
-    <div class="gruppe"><span class="t">Würfeln</span>
+    <div class="gruppe"><span class="t" data-t="wuerfeln">Würfeln</span>
       <div class="aktionen">
-        <button type="button" data-wurf="6">W6 werfen</button>
-        <button type="button" data-wurf="20">W20 werfen</button>
-        <button type="button" data-wurf="2">Münze werfen</button>
-        <button type="button" data-wurf="start">Startspieler losen</button>
+        <button type="button" data-wurf="6" data-t="w6">W6 werfen</button>
+        <button type="button" data-wurf="20" data-t="w20">W20 werfen</button>
+        <button type="button" data-wurf="2" data-t="muenze">Münze werfen</button>
+        <button type="button" data-wurf="start" data-t="startspieler">Startspieler losen</button>
       </div>
-      <div id="ergebnis" aria-live="polite"><span class="klein">Ergebnis erscheint hier.</span></div>
+      <div id="ergebnis" aria-live="polite"><span class="klein" data-t="ergebnisLeer">Ergebnis erscheint hier.</span></div>
     </div>
-    <div class="gruppe"><span class="t">Spiel</span>
+    <div class="gruppe"><span class="t" data-t="spiel">Spiel</span>
       <div class="aktionen">
-        <button type="button" id="undo">Letzte Änderung zurück</button>
-        <button type="button" id="voll">Vollbild</button>
+        <button type="button" id="undo" data-t="undo">Letzte Änderung zurück</button>
+        <button type="button" id="voll" data-t="voll">Vollbild</button>
         <button type="button" id="neu" class="gefahr">Neues Spiel</button>
       </div>
     </div>
-    <p class="klein">Tippen links zieht einen Lebenspunkt ab, rechts gibt einen dazu. Gedrückt halten zählt weiter. Die Leiste unten im Feld öffnet Commander-Schaden, Gift, Steuer und mehr. Der Spielstand bleibt nur auf diesem Gerät.</p>
+    <p class="klein" data-t="hilfe">Tippen links zieht einen Lebenspunkt ab, rechts gibt einen dazu. Gedrückt halten zählt weiter. Die Leiste unten im Feld öffnet Commander-Schaden, Gift, Steuer und mehr. Der Spielstand bleibt nur auf diesem Gerät.</p>
   </div>
 </div>
 
@@ -159,12 +161,87 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 (function(){
 "use strict";
 var FARBEN=["#c8963a","#a23f35","#2f7f7b","#4d6aa0","#7b8a3e","#7f4b7d"];
-var NAMEN=["Spieler 1","Spieler 2","Spieler 3","Spieler 4","Spieler 5","Spieler 6"];
 var KEY="tmb-lebenspunkte-v1";
 var KRONE='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 9l1-6 2.5 3L6 2l1.5 4L10 3l1 6z" fill="currentColor"/></svg>';
 var FACKEL='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1c1.5 1.6 2.4 3 1 4.6C6.6 4.8 6 4.6 5.6 5c-.8.8-.5 1.7.4 2H4c-1.2-1.6-.3-3.6 2-6zM4.5 8h3L7 11H5z" fill="currentColor"/></svg>';
+/* Sprachen: Deutsch, Englisch, Spanisch, Franzoesisch. Wahl im Menue, sonst Geraetesprache, sonst Englisch; ?lang=de|en|es|fr in der Adresse setzt sie fest. */
+var SPRACHEN=[["de","Deutsch"],["en","English"],["es","Español"],["fr","Français"]];
+var TXT={
+de:{spieler:function(n){return"Spieler "+n;},tisch:"Spieltisch",menueAuf:"Menü öffnen",zumTisch:"Zum Tisch",sprache:"Sprache",anzahl:"Spieler",start:"Startleben",namen:"Namen und Farben",
+  cmdLeben:"Commander-Schaden zieht Leben ab",wach:"Bildschirm anlassen",wuerfeln:"Würfeln",w6:"W6 werfen",w20:"W20 werfen",muenze:"Münze werfen",startspieler:"Startspieler losen",
+  ergebnisLeer:"Ergebnis erscheint hier.",spiel:"Spiel",undo:"Letzte Änderung zurück",voll:"Vollbild",neu:"Neues Spiel",neuSicher:"Wirklich? Nochmal tippen",
+  hilfe:"Tippen links zieht einen Lebenspunkt ab, rechts gibt einen dazu. Gedrückt halten zählt weiter. Die Leiste unten im Feld öffnet Commander-Schaden, Gift, Steuer und mehr. Der Spielstand bleibt nur auf diesem Gerät.",
+  minusLeben:"Ein Leben abziehen",plusLeben:"Ein Leben dazu",ausgeschieden:"Ausgeschieden",rausLeben:"Keine Lebenspunkte mehr",rausGift:"10 Giftmarken",
+  rausCmd:function(v){return"21 Commander-Schaden"+(v?" von "+v:"");},
+  commander:"Commander",gift:"Gift",steuer:"Steuer",energie:"Energie",erfahrung:"Erfahrung",mehr:"Mehr",monarch:"Monarch",initiative:"Initiative",partner:"Partner-Commander",
+  fertig:"Fertig",cmdErhalten:"Commander-Schaden erhalten",keineGegner:"Keine Gegner im Spiel.",cmdRegel:"Ab 21 Schaden von einem Commander ist man raus.",cmdAbzug:" Der Schaden wird auch vom Leben abgezogen.",
+  zaehler:"Zähler",gewirkt:function(n){return"Commander gewirkt (Steuer +"+n+")";},minusEins:function(l){return l+" minus eins";},plusEins:function(l){return l+" plus eins";},
+  farbeVon:function(n){return"Farbe von "+n+" wechseln";},nameVon:function(i){return"Name Spieler "+i;},lp:function(n){return n+" LP";},
+  startGilt:function(v){return"Startleben "+v+" gilt ab dem nächsten neuen Spiel.";},undoOk:"Letzte Änderung zurückgenommen.",undoLeer:"Nichts mehr zum Zurücknehmen.",
+  neuOk:function(v){return"Neues Spiel mit "+v+" Leben.";},vollNein:"Vollbild ist hier nicht verfügbar.",
+  wurf:function(w,n){return"W"+w+": <b>"+n+"</b>";},muenzeErg:function(x){return"Münze: <b>"+x+"</b>";},kopf:"Kopf",zahl:"Zahl",beginnt:function(n){return"Es beginnt <b>"+n+"</b>";},
+  wachNein:"Dieses Gerät erlaubt das Wachhalten nicht.",wachAbgelehnt:"Wachhalten wurde abgelehnt."},
+en:{spieler:function(n){return"Player "+n;},tisch:"Game table",menueAuf:"Open menu",zumTisch:"Back to table",sprache:"Language",anzahl:"Players",start:"Starting life",namen:"Names and colors",
+  cmdLeben:"Commander damage reduces life",wach:"Keep screen on",wuerfeln:"Dice",w6:"Roll D6",w20:"Roll D20",muenze:"Flip a coin",startspieler:"Pick first player",
+  ergebnisLeer:"The result appears here.",spiel:"Game",undo:"Undo last change",voll:"Full screen",neu:"New game",neuSicher:"Sure? Tap again",
+  hilfe:"Tap the left side to lose one life, the right side to gain one. Hold to keep counting. The bar at the bottom of each field opens commander damage, poison, tax and more. The game state stays on this device only.",
+  minusLeben:"Lose one life",plusLeben:"Gain one life",ausgeschieden:"Eliminated",rausLeben:"No life left",rausGift:"10 poison counters",
+  rausCmd:function(v){return"21 commander damage"+(v?" from "+v:"");},
+  commander:"Commander",gift:"Poison",steuer:"Tax",energie:"Energy",erfahrung:"Experience",mehr:"More",monarch:"Monarch",initiative:"Initiative",partner:"Partner commander",
+  fertig:"Done",cmdErhalten:"Commander damage taken",keineGegner:"No opponents in the game.",cmdRegel:"21 damage from a single commander knocks you out.",cmdAbzug:" The damage also comes off your life.",
+  zaehler:"Counters",gewirkt:function(n){return"Commander cast (tax +"+n+")";},minusEins:function(l){return l+" minus one";},plusEins:function(l){return l+" plus one";},
+  farbeVon:function(n){return"Change color for "+n;},nameVon:function(i){return"Name of player "+i;},lp:function(n){return n+" life";},
+  startGilt:function(v){return"Starting life "+v+" applies from the next new game.";},undoOk:"Last change undone.",undoLeer:"Nothing left to undo.",
+  neuOk:function(v){return"New game with "+v+" life.";},vollNein:"Full screen isn't available here.",
+  wurf:function(w,n){return"D"+w+": <b>"+n+"</b>";},muenzeErg:function(x){return"Coin: <b>"+x+"</b>";},kopf:"Heads",zahl:"Tails",beginnt:function(n){return"<b>"+n+"</b> goes first";},
+  wachNein:"This device can't keep the screen on.",wachAbgelehnt:"Keeping the screen on was refused."},
+es:{spieler:function(n){return"Jugador "+n;},tisch:"Mesa de juego",menueAuf:"Abrir menú",zumTisch:"Volver a la mesa",sprache:"Idioma",anzahl:"Jugadores",start:"Vidas iniciales",namen:"Nombres y colores",
+  cmdLeben:"El daño de comandante resta vidas",wach:"Mantener la pantalla encendida",wuerfeln:"Dados",w6:"Tirar D6",w20:"Tirar D20",muenze:"Lanzar moneda",startspieler:"Sortear quién empieza",
+  ergebnisLeer:"El resultado aparece aquí.",spiel:"Partida",undo:"Deshacer último cambio",voll:"Pantalla completa",neu:"Nueva partida",neuSicher:"¿Seguro? Toca otra vez",
+  hilfe:"Toca a la izquierda para restar una vida y a la derecha para sumarla. Mantén pulsado para seguir contando. La barra inferior de cada zona abre daño de comandante, veneno, impuesto y más. La partida solo se guarda en este dispositivo.",
+  minusLeben:"Restar una vida",plusLeben:"Sumar una vida",ausgeschieden:"Eliminado",rausLeben:"Sin vidas",rausGift:"10 contadores de veneno",
+  rausCmd:function(v){return"21 de daño de comandante"+(v?" de "+v:"");},
+  commander:"Comandante",gift:"Veneno",steuer:"Impuesto",energie:"Energía",erfahrung:"Experiencia",mehr:"Más",monarch:"Monarca",initiative:"Iniciativa",partner:"Comandante compañero",
+  fertig:"Listo",cmdErhalten:"Daño de comandante recibido",keineGegner:"No hay rivales en la partida.",cmdRegel:"Con 21 de daño de un mismo comandante quedas eliminado.",cmdAbzug:" El daño también se resta de tus vidas.",
+  zaehler:"Contadores",gewirkt:function(n){return"Comandante lanzado (impuesto +"+n+")";},minusEins:function(l){return l+" menos uno";},plusEins:function(l){return l+" más uno";},
+  farbeVon:function(n){return"Cambiar el color de "+n;},nameVon:function(i){return"Nombre del jugador "+i;},lp:function(n){return n+" vidas";},
+  startGilt:function(v){return"Las "+v+" vidas iniciales se aplican desde la próxima partida.";},undoOk:"Último cambio deshecho.",undoLeer:"No queda nada por deshacer.",
+  neuOk:function(v){return"Nueva partida con "+v+" vidas.";},vollNein:"La pantalla completa no está disponible aquí.",
+  wurf:function(w,n){return"D"+w+": <b>"+n+"</b>";},muenzeErg:function(x){return"Moneda: <b>"+x+"</b>";},kopf:"Cara",zahl:"Cruz",beginnt:function(n){return"Empieza <b>"+n+"</b>";},
+  wachNein:"Este dispositivo no puede mantener la pantalla encendida.",wachAbgelehnt:"No se permitió mantener la pantalla encendida."},
+fr:{spieler:function(n){return"Joueur "+n;},tisch:"Table de jeu",menueAuf:"Ouvrir le menu",zumTisch:"Retour à la table",sprache:"Langue",anzahl:"Joueurs",start:"Points de vie de départ",namen:"Noms et couleurs",
+  cmdLeben:"Les blessures de commandant retirent des points de vie",wach:"Garder l'écran allumé",wuerfeln:"Dés",w6:"Lancer un D6",w20:"Lancer un D20",muenze:"Lancer une pièce",startspieler:"Tirer le premier joueur",
+  ergebnisLeer:"Le résultat s'affiche ici.",spiel:"Partie",undo:"Annuler la dernière modification",voll:"Plein écran",neu:"Nouvelle partie",neuSicher:"Sûr ? Touchez encore",
+  hilfe:"Touchez à gauche pour retirer un point de vie, à droite pour en ajouter un. Maintenez pour continuer à compter. La barre en bas de chaque zone ouvre les blessures de commandant, le poison, la taxe et plus encore. La partie reste uniquement sur cet appareil.",
+  minusLeben:"Retirer un point de vie",plusLeben:"Ajouter un point de vie",ausgeschieden:"Éliminé",rausLeben:"Plus de points de vie",rausGift:"10 marqueurs poison",
+  rausCmd:function(v){return"21 blessures de commandant"+(v?" de "+v:"");},
+  commander:"Commandant",gift:"Poison",steuer:"Taxe",energie:"Énergie",erfahrung:"Expérience",mehr:"Plus",monarch:"Monarque",initiative:"Initiative",partner:"Commandant partenaire",
+  fertig:"OK",cmdErhalten:"Blessures de commandant subies",keineGegner:"Aucun adversaire dans la partie.",cmdRegel:"21 blessures infligées par un même commandant vous éliminent.",cmdAbzug:" Les blessures sont aussi retirées des points de vie.",
+  zaehler:"Compteurs",gewirkt:function(n){return"Commandant lancé (taxe +"+n+")";},minusEins:function(l){return l+" moins un";},plusEins:function(l){return l+" plus un";},
+  farbeVon:function(n){return"Changer la couleur de "+n;},nameVon:function(i){return"Nom du joueur "+i;},lp:function(n){return n+" PV";},
+  startGilt:function(v){return"Les "+v+" points de vie de départ s'appliquent à la prochaine partie.";},undoOk:"Dernière modification annulée.",undoLeer:"Plus rien à annuler.",
+  neuOk:function(v){return"Nouvelle partie à "+v+" points de vie.";},vollNein:"Le plein écran n'est pas disponible ici.",
+  wurf:function(w,n){return"D"+w+" : <b>"+n+"</b>";},muenzeErg:function(x){return"Pièce : <b>"+x+"</b>";},kopf:"Face",zahl:"Pile",beginnt:function(n){return"<b>"+n+"</b> commence";},
+  wachNein:"Cet appareil ne peut pas garder l'écran allumé.",wachAbgelehnt:"Le maintien de l'écran allumé a été refusé."}
+};
+function spracheErmitteln(){
+  var c="";
+  try{var q=new URLSearchParams(location.search);c=String(q.get("lang")||q.get("sprache")||"").slice(0,2).toLowerCase();if(TXT[c]){try{localStorage.setItem(KEY+"-sprache",c);}catch(e){}return c;}}catch(e){}
+  try{c=localStorage.getItem(KEY+"-sprache");if(c&&TXT[c])return c;}catch(e){}
+  var l=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||""];
+  for(var i=0;i<l.length;i++){c=String(l[i]).slice(0,2).toLowerCase();if(TXT[c])return c;}
+  return"en";
+}
+var SPR=spracheErmitteln();
+function t(k){var v=TXT[SPR][k];if(v===undefined)v=TXT.de[k];return typeof v==="function"?v.apply(null,Array.prototype.slice.call(arguments,1)):v;}
+function standardname(name,i){return SPRACHEN.some(function(s){return name===TXT[s[0]].spieler(i+1);});}
+function texteSetzen(){
+  document.documentElement.lang=SPR;
+  Array.prototype.forEach.call(document.querySelectorAll("[data-t]"),function(el){el.textContent=t(el.dataset.t);});
+  Array.prototype.forEach.call(document.querySelectorAll("[data-t-aria]"),function(el){el.setAttribute("aria-label",t(el.dataset.tAria));});
+}
 
-function spieler(i,leben){return {id:"p"+i+"-"+Math.random().toString(36).slice(2,7),name:NAMEN[i],farbe:FARBEN[i],leben:leben,gift:0,energie:0,erfahrung:0,steuer:0,partner:false,cmd:{}};}
+function spieler(i,leben){return {id:"p"+i+"-"+Math.random().toString(36).slice(2,7),name:t("spieler",i+1),farbe:FARBEN[i],leben:leben,gift:0,energie:0,erfahrung:0,steuer:0,partner:false,cmd:{}};}
 function neuerZustand(n,leben){var s={n:n,start:leben,cmdLeben:true,monarch:null,initiative:null,spieler:[]};for(var i=0;i<6;i++)s.spieler.push(spieler(i,leben));return s;}
 
 function laden(){
@@ -174,15 +251,16 @@ function laden(){
   return neuerZustand(n,l);
 }
 var S=laden();
+S.spieler.forEach(function(p,i){if(standardname(p.name,i))p.name=t("spieler",i+1);});
 var verlauf=[];var letzteAenderung=0;
 function speichern(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 function merken(buendeln){var jetzt=Date.now();if(buendeln&&jetzt-letzteAenderung<1500){letzteAenderung=jetzt;return;}letzteAenderung=jetzt;verlauf.push(JSON.stringify(S));if(verlauf.length>80)verlauf.shift();}
 function aktive(){return S.spieler.slice(0,S.n);}
 function quellen(){var q=[];aktive().forEach(function(p){q.push({key:p.id+":a",p:p,teil:p.partner?"A":""});if(p.partner)q.push({key:p.id+":b",p:p,teil:"B"});});return q;}
 function raus(p){
-  if(p.leben<=0)return"Keine Lebenspunkte mehr";
-  if(p.gift>=10)return"10 Giftmarken";
-  for(var k in p.cmd){if(p.cmd[k]>=21){var src=quellen().filter(function(q){return q.key===k;})[0];return"21 Commander-Schaden"+(src?" von "+src.p.name+(src.teil?" "+src.teil:""):"");}}
+  if(p.leben<=0)return t("rausLeben");
+  if(p.gift>=10)return t("rausGift");
+  for(var k in p.cmd){if(p.cmd[k]>=21){var src=quellen().filter(function(q){return q.key===k;})[0];return t("rausCmd",src?src.p.name+(src.teil?" "+src.teil:""):"");}}
   return"";
 }
 function mischen(hex,anteil){var c=parseInt(hex.slice(1),16),r=c>>16,g=c>>8&255,b=c&255,br=20,bg=17,bb=14;
@@ -218,8 +296,8 @@ function aufbauen(){
     f.style.gridRow=s[0];f.style.gridColumn=s[1]+" / span "+s[2];
     f.setAttribute("aria-label",p.name);
     f.innerHTML='<div class="innen"><div class="kopf"><span class="name"></span><span class="marken"></span></div>'+
-      '<div class="mitte"><button class="tap minus" type="button" aria-label="Ein Leben abziehen">−</button><span class="delta"></span><span class="leben"></span><button class="tap plus" type="button" aria-label="Ein Leben dazu">+</button></div>'+
-      '<div class="fuss"></div><div class="raus" hidden><strong>Ausgeschieden</strong><span></span></div></div>';
+      '<div class="mitte"><button class="tap minus" type="button" aria-label="'+t("minusLeben")+'">−</button><span class="delta"></span><span class="leben"></span><button class="tap plus" type="button" aria-label="'+t("plusLeben")+'">+</button></div>'+
+      '<div class="fuss"></div><div class="raus" hidden><strong>'+t("ausgeschieden")+'</strong><span></span></div></div>';
     tisch.appendChild(f);felder.push(f);
     halten(f.querySelector(".minus"),i,-1);halten(f.querySelector(".plus"),i,1);
     if(ro)ro.observe(f);
@@ -232,17 +310,17 @@ function zeichnen(){
     var f=felder[i];if(!f)return;
     f.style.background="linear-gradient(160deg,"+mischen(p.farbe,.62)+","+mischen(p.farbe,.38)+")";
     f.querySelector(".name").textContent=p.name;
-    var m="";if(S.monarch===p.id)m+='<span class="marke">'+KRONE+'Monarch</span>';if(S.initiative===p.id)m+='<span class="marke">'+FACKEL+'Initiative</span>';
+    var m="";if(S.monarch===p.id)m+='<span class="marke">'+KRONE+t("monarch")+'</span>';if(S.initiative===p.id)m+='<span class="marke">'+FACKEL+t("initiative")+'</span>';
     f.querySelector(".marken").innerHTML=m;
     f.querySelector(".leben").textContent=p.leben;
     var cmdMax=0;for(var k in p.cmd)cmdMax=Math.max(cmdMax,p.cmd[k]);
     var fuss=f.querySelector(".fuss");
-    fuss.innerHTML='<button type="button" class="chip'+(cmdMax>=21?' warn':'')+'" data-blatt="'+i+'">Commander<b>'+cmdMax+'</b></button>'+
-      (p.gift?'<button type="button" class="chip'+(p.gift>=10?' warn':'')+'" data-blatt="'+i+'">Gift<b>'+p.gift+'</b></button>':'')+
-      (p.steuer?'<button type="button" class="chip" data-blatt="'+i+'">Steuer<b>+'+(2*p.steuer)+'</b></button>':'')+
-      (p.energie?'<button type="button" class="chip" data-blatt="'+i+'">Energie<b>'+p.energie+'</b></button>':'')+
-      (p.erfahrung?'<button type="button" class="chip" data-blatt="'+i+'">Erfahrung<b>'+p.erfahrung+'</b></button>':'')+
-      '<button type="button" class="chip" data-blatt="'+i+'">Mehr</button>';
+    fuss.innerHTML='<button type="button" class="chip'+(cmdMax>=21?' warn':'')+'" data-blatt="'+i+'">'+t("commander")+'<b>'+cmdMax+'</b></button>'+
+      (p.gift?'<button type="button" class="chip'+(p.gift>=10?' warn':'')+'" data-blatt="'+i+'">'+t("gift")+'<b>'+p.gift+'</b></button>':'')+
+      (p.steuer?'<button type="button" class="chip" data-blatt="'+i+'">'+t("steuer")+'<b>+'+(2*p.steuer)+'</b></button>':'')+
+      (p.energie?'<button type="button" class="chip" data-blatt="'+i+'">'+t("energie")+'<b>'+p.energie+'</b></button>':'')+
+      (p.erfahrung?'<button type="button" class="chip" data-blatt="'+i+'">'+t("erfahrung")+'<b>'+p.erfahrung+'</b></button>':'')+
+      '<button type="button" class="chip" data-blatt="'+i+'">'+t("mehr")+'</button>';
     var d=deltas[p.id],de=f.querySelector(".delta");
     if(d&&d.wert){de.textContent=(d.wert>0?"+":"−")+Math.abs(d.wert);de.classList.add("an");}else{de.classList.remove("an");}
     var grund=raus(p),r=f.querySelector(".raus");r.hidden=!grund;r.querySelector("span").textContent=grund;
@@ -279,28 +357,28 @@ function blattOeffnen(i){
 function blattSchliessen(){if(offenesBlatt===null)return;var f=felder[offenesBlatt];var b=f&&f.querySelector(".blatt");if(b)b.remove();offenesBlatt=null;}
 function zeile(lbl,farbe,akt,wert,tot,i,key){
   return '<div class="zeile"><div class="lbl">'+(farbe?'<span class="punkt" style="background:'+farbe+'"></span>':'')+'<span>'+lbl+'</span></div>'+
-    '<div class="zahl"><button type="button" class="knopf" data-akt="'+akt+'" data-i="'+i+'" data-k="'+(key||"")+'" data-d="-1" aria-label="'+lbl+' minus eins">−</button>'+
+    '<div class="zahl"><button type="button" class="knopf" data-akt="'+akt+'" data-i="'+i+'" data-k="'+(key||"")+'" data-d="-1" aria-label="'+t("minusEins",lbl)+'">−</button>'+
     '<output class="'+(tot?'tot':'')+'">'+wert+'</output>'+
-    '<button type="button" class="knopf" data-akt="'+akt+'" data-i="'+i+'" data-k="'+(key||"")+'" data-d="1" aria-label="'+lbl+' plus eins">+</button></div></div>';
+    '<button type="button" class="knopf" data-akt="'+akt+'" data-i="'+i+'" data-k="'+(key||"")+'" data-d="1" aria-label="'+t("plusEins",lbl)+'">+</button></div></div>';
 }
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 function blattFuellen(i){
   var f=felder[i];var b=f&&f.querySelector(".blatt");if(!b)return;var p=S.spieler[i];
-  var h='<div class="oben"><h3>'+esc(p.name)+'</h3><button type="button" class="fertig" data-akt="zu">Fertig</button></div>';
-  h+='<h3>Commander-Schaden erhalten</h3>';
+  var h='<div class="oben"><h3>'+esc(p.name)+'</h3><button type="button" class="fertig" data-akt="zu">'+t("fertig")+'</button></div>';
+  h+='<h3>'+t("cmdErhalten")+'</h3>';
   var qs=quellen().filter(function(q){return q.p.id!==p.id;});
-  if(!qs.length)h+='<p class="hinweis">Keine Gegner im Spiel.</p>';
+  if(!qs.length)h+='<p class="hinweis">'+t("keineGegner")+'</p>';
   qs.forEach(function(q){var v=p.cmd[q.key]||0;h+=zeile(esc(q.p.name)+(q.teil?" · "+q.teil:""),q.p.farbe,"cmd",v,v>=21,i,q.key);});
-  h+='<p class="hinweis">Ab 21 Schaden von einem Commander ist man raus.'+(S.cmdLeben?' Der Schaden wird auch vom Leben abgezogen.':'')+'</p>';
-  h+='<h3>Zähler</h3>';
-  h+=zeile("Gift",null,"gift",p.gift,p.gift>=10,i);
-  h+=zeile("Commander gewirkt (Steuer +"+(2*p.steuer)+")",null,"steuer",p.steuer,false,i);
-  h+=zeile("Energie",null,"energie",p.energie,false,i);
-  h+=zeile("Erfahrung",null,"erfahrung",p.erfahrung,false,i);
+  h+='<p class="hinweis">'+t("cmdRegel")+(S.cmdLeben?t("cmdAbzug"):'')+'</p>';
+  h+='<h3>'+t("zaehler")+'</h3>';
+  h+=zeile(t("gift"),null,"gift",p.gift,p.gift>=10,i);
+  h+=zeile(t("gewirkt",2*p.steuer),null,"steuer",p.steuer,false,i);
+  h+=zeile(t("energie"),null,"energie",p.energie,false,i);
+  h+=zeile(t("erfahrung"),null,"erfahrung",p.erfahrung,false,i);
   h+='<div class="reihe">'+
-     '<button type="button" class="pille" data-akt="monarch" data-i="'+i+'" aria-pressed="'+(S.monarch===p.id)+'">Monarch</button>'+
-     '<button type="button" class="pille" data-akt="initiative" data-i="'+i+'" aria-pressed="'+(S.initiative===p.id)+'">Initiative</button>'+
-     '<button type="button" class="pille" data-akt="partner" data-i="'+i+'" aria-pressed="'+p.partner+'">Partner-Commander</button></div>';
+     '<button type="button" class="pille" data-akt="monarch" data-i="'+i+'" aria-pressed="'+(S.monarch===p.id)+'">'+t("monarch")+'</button>'+
+     '<button type="button" class="pille" data-akt="initiative" data-i="'+i+'" aria-pressed="'+(S.initiative===p.id)+'">'+t("initiative")+'</button>'+
+     '<button type="button" class="pille" data-akt="partner" data-i="'+i+'" aria-pressed="'+p.partner+'">'+t("partner")+'</button></div>';
   b.innerHTML=h;
 }
 function blattAktion(a){
@@ -321,48 +399,56 @@ menue.addEventListener("click",function(e){if(e.target===menue)menue.hidden=true
 document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!menue.hidden)menue.hidden=true;else blattSchliessen();}});
 function seg(el,werte,aktuell,fn){el.innerHTML="";werte.forEach(function(v){var b=document.createElement("button");b.type="button";b.textContent=v;b.setAttribute("aria-pressed",String(v===aktuell));b.addEventListener("click",function(){fn(v);});el.appendChild(b);});}
 function menueFuellen(){
+  var sp=document.getElementById("sprache");sp.innerHTML="";
+  SPRACHEN.forEach(function(s){var b=document.createElement("button");b.type="button";b.lang=s[0];b.textContent=s[1];b.setAttribute("aria-pressed",String(s[0]===SPR));b.addEventListener("click",function(){spracheSetzen(s[0]);});sp.appendChild(b);});
   seg(document.getElementById("anzahl"),[2,3,4,5,6],S.n,function(v){merken(false);S.n=v;aufbauen();menueFuellen();});
-  seg(document.getElementById("start"),[20,30,40],S.start,function(v){S.start=v;speichern();menueFuellen();ergebnis("Startleben "+v+" gilt ab dem nächsten neuen Spiel.");});
+  seg(document.getElementById("start"),[20,30,40],S.start,function(v){S.start=v;speichern();menueFuellen();ergebnis(t("startGilt",v));});
   var nm=document.getElementById("namen");nm.innerHTML="";
   aktive().forEach(function(p,i){
-    var fb=document.createElement("button");fb.type="button";fb.className="farbe";fb.style.background=p.farbe;fb.setAttribute("aria-label","Farbe von "+p.name+" wechseln");
+    var fb=document.createElement("button");fb.type="button";fb.className="farbe";fb.style.background=p.farbe;fb.setAttribute("aria-label",t("farbeVon",p.name));
     fb.addEventListener("click",function(){p.farbe=FARBEN[(FARBEN.indexOf(p.farbe)+1)%FARBEN.length];fb.style.background=p.farbe;zeichnen();});
-    var inp=document.createElement("input");inp.id="name-"+i;inp.value=p.name;inp.maxLength=18;inp.setAttribute("aria-label","Name Spieler "+(i+1));
-    inp.addEventListener("input",function(){p.name=inp.value||NAMEN[i];zeichnen();});
-    var lv=document.createElement("span");lv.className="klein";lv.textContent=p.leben+" LP";
+    var inp=document.createElement("input");inp.id="name-"+i;inp.value=p.name;inp.maxLength=18;inp.setAttribute("aria-label",t("nameVon",i+1));
+    inp.addEventListener("input",function(){p.name=inp.value||t("spieler",i+1);zeichnen();});
+    var lv=document.createElement("span");lv.className="klein";lv.textContent=t("lp",p.leben);
     nm.appendChild(fb);nm.appendChild(inp);nm.appendChild(lv);
   });
   document.getElementById("cmdleben").setAttribute("aria-pressed",String(S.cmdLeben));
   document.getElementById("wach").setAttribute("aria-pressed",String(!!sperre));
-  var neu=document.getElementById("neu");neu.classList.remove("sicher");neu.textContent="Neues Spiel";
+  var neu=document.getElementById("neu");neu.classList.remove("sicher");neu.textContent=t("neu");
+}
+function spracheSetzen(c){
+  if(!TXT[c])return;SPR=c;try{localStorage.setItem(KEY+"-sprache",c);}catch(e){}
+  S.spieler.forEach(function(p,i){if(standardname(p.name,i))p.name=t("spieler",i+1);});
+  texteSetzen();aufbauen();menueFuellen();ergebnis('<span class="klein" data-t="ergebnisLeer">'+t("ergebnisLeer")+'</span>');
 }
 document.getElementById("cmdleben").addEventListener("click",function(){S.cmdLeben=!S.cmdLeben;speichern();menueFuellen();});
-document.getElementById("undo").addEventListener("click",function(){var t=verlauf.pop();if(t){S=JSON.parse(t);aufbauen();menueFuellen();ergebnis("Letzte Änderung zurückgenommen.");}else{ergebnis("Nichts mehr zum Zurücknehmen.");}});
+document.getElementById("undo").addEventListener("click",function(){var t=verlauf.pop();if(t){S=JSON.parse(t);aufbauen();menueFuellen();ergebnis(t("undoOk"));}else{ergebnis(t("undoLeer"));}});
 document.getElementById("neu").addEventListener("click",function(){
-  var b=this;if(!b.classList.contains("sicher")){b.classList.add("sicher");b.textContent="Wirklich? Nochmal tippen";return;}
+  var b=this;if(!b.classList.contains("sicher")){b.classList.add("sicher");b.textContent=t("neuSicher");return;}
   merken(false);var alt=S;S=neuerZustand(alt.n,alt.start);S.cmdLeben=alt.cmdLeben;
   S.spieler.forEach(function(p,i){p.name=alt.spieler[i].name;p.farbe=alt.spieler[i].farbe;});
-  deltas={};aufbauen();menueFuellen();ergebnis("Neues Spiel mit "+S.start+" Leben.");
+  deltas={};aufbauen();menueFuellen();ergebnis(t("neuOk",S.start));
 });
-document.getElementById("voll").addEventListener("click",function(){var el=document.documentElement;try{if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen().catch(function(){ergebnis("Vollbild ist hier nicht verfügbar.");});else ergebnis("Vollbild ist hier nicht verfügbar.");}catch(e){ergebnis("Vollbild ist hier nicht verfügbar.");}});
+document.getElementById("voll").addEventListener("click",function(){var el=document.documentElement;try{if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen().catch(function(){ergebnis(t("vollNein"));});else ergebnis(t("vollNein"));}catch(e){ergebnis(t("vollNein"));}});
 function ergebnis(html){document.getElementById("ergebnis").innerHTML=html;}
 function zufall(n){if(window.crypto&&crypto.getRandomValues){var a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n;}return Math.floor(Math.random()*n);}
 Array.prototype.forEach.call(document.querySelectorAll("[data-wurf]"),function(b){b.addEventListener("click",function(){
   var w=b.dataset.wurf;
-  if(w==="2")ergebnis("Münze: <b>"+(zufall(2)?"Kopf":"Zahl")+"</b>");
-  else if(w==="start"){var p=aktive()[zufall(S.n)];ergebnis('<span class="punkt" style="background:'+p.farbe+'"></span>Es beginnt <b>'+esc(p.name)+'</b>');}
-  else ergebnis("W"+w+": <b>"+(1+zufall(+w))+"</b>");
+  if(w==="2")ergebnis(t("muenzeErg",zufall(2)?t("kopf"):t("zahl")));
+  else if(w==="start"){var p=aktive()[zufall(S.n)];ergebnis('<span class="punkt" style="background:'+p.farbe+'"></span>'+t("beginnt",esc(p.name)));}
+  else ergebnis(t("wurf",w,1+zufall(+w)));
 });});
 
 /* Bildschirm wach halten */
 var sperre=null;
-function wachAn(){if(!("wakeLock" in navigator)){ergebnis("Dieses Gerät erlaubt das Wachhalten nicht.");return Promise.resolve();}
-  return navigator.wakeLock.request("screen").then(function(s){sperre=s;s.addEventListener("release",function(){sperre=null;menueFuellen();});menueFuellen();}).catch(function(){sperre=null;ergebnis("Wachhalten wurde abgelehnt.");menueFuellen();});}
+function wachAn(){if(!("wakeLock" in navigator)){ergebnis(t("wachNein"));return Promise.resolve();}
+  return navigator.wakeLock.request("screen").then(function(s){sperre=s;s.addEventListener("release",function(){sperre=null;menueFuellen();});menueFuellen();}).catch(function(){sperre=null;ergebnis(t("wachAbgelehnt"));menueFuellen();});}
 document.getElementById("wach").addEventListener("click",function(){if(sperre){sperre.release();sperre=null;try{localStorage.removeItem(KEY+"-wach");}catch(e){}menueFuellen();}else{try{localStorage.setItem(KEY+"-wach","1");}catch(e){}wachAn();}});
 document.addEventListener("visibilitychange",function(){var w=false;try{w=localStorage.getItem(KEY+"-wach")==="1";}catch(e){}if(document.visibilityState==="visible"&&w&&!sperre)wachAn();});
 tisch.addEventListener("pointerdown",function once(){var w=false;try{w=localStorage.getItem(KEY+"-wach")==="1";}catch(e){}if(w&&!sperre)wachAn();},{once:true});
 
 window.addEventListener("resize",function(){felder.forEach(groesse);});
+texteSetzen();
 aufbauen();
 if("serviceWorker" in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{navigator.serviceWorker.register("sw.js").catch(function(){});}catch(e){}}
 })();
