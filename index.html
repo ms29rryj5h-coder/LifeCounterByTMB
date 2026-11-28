@@ -86,19 +86,19 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 #stein svg{width:30px;height:20px}
 
 /* Menue */
-#menue{position:fixed;inset:0;z-index:20;background:rgba(8,6,5,.72);display:flex;justify-content:center;align-items:flex-end}
-#menue .karte{width:min(100%,560px);max-height:92%;overflow:auto;background:var(--sheet);border-radius:18px 18px 0 0;
+#menue,#ende{position:fixed;inset:0;z-index:20;background:rgba(8,6,5,.72);display:flex;justify-content:center;align-items:flex-end}
+#menue .karte,#ende .karte{width:min(100%,560px);max-height:92%;overflow:auto;background:var(--sheet);border-radius:18px 18px 0 0;
   padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
-#menue header{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-#menue h2{margin:0;font-family:var(--f-num);font-weight:800;font-size:28px;letter-spacing:.02em;text-wrap:balance}
-#menue h2 small{display:block;font-family:var(--f-ui);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+#menue header,#ende header{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+#menue h2,#ende h2{margin:0;font-family:var(--f-num);font-weight:800;font-size:28px;letter-spacing:.02em;text-wrap:balance}
+#menue h2 small,#ende h2 small{display:block;font-family:var(--f-ui);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .gruppe{display:flex;flex-direction:column;gap:8px}
 .gruppe > label,.gruppe > .t{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim)}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
 .seg button{min-width:44px;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.07);font-family:var(--f-num);font-weight:800;font-size:20px}
 .seg button[aria-pressed="true"]{background:var(--gold);color:#1b140a}
 .seg.sprachen button,.seg.worte button{font-family:var(--f-ui);font-weight:600;font-size:15px;padding:9px 14px}
-.namen{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 8px;align-items:center}
+.namen{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1fr) auto;gap:6px 8px;align-items:center}
 .namen input{width:100%;min-width:0;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:#16120e;color:var(--ink);font:inherit;font-size:16px;-webkit-user-select:text;user-select:text}
 .farbe{width:30px;height:30px;border-radius:8px;border:2px solid rgba(255,255,255,.25)}
 .schalter{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}
@@ -142,6 +142,19 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .protokoll .ab{color:#f3b2a8}
 .protokoll .auf{color:var(--ok)}
 .protokoll li.trenner{color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:rgba(217,164,65,.07)}
+/* Stammspieler, Spielende, Statistik */
+#ende{z-index:21}
+.stammkopf{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
+.stammkopf .t{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim)}
+.textknopf{font-size:14px;font-weight:600;color:var(--gold);padding:4px 2px}
+.pille.mitpunkt{display:inline-flex;align-items:center;gap:6px}
+.pille.mitpunkt .punkt{box-shadow:0 0 0 2px rgba(20,17,14,.6)}
+p.klein:empty{display:none}
+.pille.vorschlag{box-shadow:inset 0 0 0 2px var(--gold)}
+.protokoll li.sieg{background:rgba(217,164,65,.14)}
+.protokoll .rausgrund{color:#f3b2a8;font-family:var(--f-ui);font-size:14px}
+.statistik{display:flex;flex-direction:column;gap:8px}
+.statistik h4{margin:4px 0 0;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -161,7 +174,9 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
     <div class="gruppe"><span class="t" data-t="sprache">Sprache</span><div class="seg sprachen" id="sprache"></div></div>
     <div class="gruppe"><span class="t" data-t="anzahl">Spieler</span><div class="seg" id="anzahl"></div></div>
     <div class="gruppe"><span class="t" data-t="start">Startleben</span><div class="seg" id="start"></div></div>
-    <div class="gruppe"><span class="t" data-t="namen">Namen und Farben</span><div class="namen" id="namen"></div></div>
+    <div class="gruppe"><span class="t" data-t="namen">Namen und Farben</span><div class="namen" id="namen"></div>
+      <div class="stammkopf"><span class="t" data-t="stamm">Stammspieler</span><button type="button" class="textknopf" id="stammedit"></button></div>
+      <div class="reihe" id="stamm"></div><p class="klein" id="stamminfo"></p></div>
     <div class="gruppe">
       <div class="schalter"><span data-t="cmdLeben">Commander-Schaden zieht Leben ab</span><button type="button" id="cmdleben" aria-label="Commander-Schaden zieht Leben ab" data-t-aria="cmdLeben"></button></div>
       <div class="schalter"><span data-t="wach">Bildschirm anlassen</span><button type="button" id="wach" aria-label="Bildschirm anlassen" data-t-aria="wach"></button></div>
@@ -186,14 +201,28 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
       <div class="aktionen">
         <button type="button" id="undo" data-t="undo">Letzte Änderung zurück</button>
         <button type="button" id="voll" data-t="voll">Vollbild</button>
+        <button type="button" id="spielende" data-t="spielEnde">Spiel beenden</button>
         <button type="button" id="neu" class="gefahr">Neues Spiel</button>
       </div>
     </div>
     <div class="gruppe"><span class="t" data-t="verlauf">Verlauf</span>
       <div class="grafikrahmen" id="grafikrahmen" hidden><svg class="grafik" id="grafik" viewBox="0 0 300 100" preserveAspectRatio="none" role="img" aria-label="Lebenspunkte im Spielverlauf" data-t-aria="grafik"></svg><span class="gw oben" id="gmax" aria-hidden="true"></span><span class="gw unten" id="gmin" aria-hidden="true"></span></div>
       <ol class="protokoll" id="protokoll"></ol>
+      <div class="aktionen"><button type="button" id="verlaufteilen" data-t="verlaufTeilen">Verlauf teilen</button></div>
     </div>
+    <div class="gruppe"><span class="t" data-t="statistik">Statistik</span><div class="statistik" id="statistik"></div>
+      <div class="aktionen"><button type="button" id="statweg" class="gefahr"></button></div></div>
     <p class="klein" data-t="hilfe">Tippen links zieht einen Lebenspunkt ab, rechts gibt einen dazu. Gedrückt halten zählt weiter. Die Leiste unten im Feld öffnet Commander-Schaden, Gift, Steuer und mehr. Der Spielstand bleibt nur auf diesem Gerät.</p>
+  </div>
+</div>
+
+<div id="ende" hidden>
+  <div class="karte" role="dialog" aria-modal="true" aria-labelledby="etitel">
+    <header><h2 id="etitel"><small>by The Magical Brick</small><span data-t="endeTitel">Spielende</span></h2><button class="fertig" id="endezu" type="button" data-t="zumTisch">Zum Tisch</button></header>
+    <p class="klein" id="endedaten"></p>
+    <div class="gruppe"><span class="t" data-t="sieger">Gewinner</span><div class="reihe" id="siegerwahl"></div><p class="klein" id="siegerinfo"></p></div>
+    <ul class="protokoll" id="endliste"></ul>
+    <div class="aktionen"><button type="button" id="endeteilen" data-t="teilen">Teilen</button><button type="button" id="endeneu" class="gefahr"></button></div>
   </div>
 </div>
 
@@ -205,9 +234,9 @@ var KEY="tmb-lebenspunkte-v1";
 var KRONE='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 9l1-6 2.5 3L6 2l1.5 4L10 3l1 6z" fill="currentColor"/></svg>';
 var FACKEL='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1c1.5 1.6 2.4 3 1 4.6C6.6 4.8 6 4.6 5.6 5c-.8.8-.5 1.7.4 2H4c-1.2-1.6-.3-3.6 2-6zM4.5 8h3L7 11H5z" fill="currentColor"/></svg>';
 var STADT='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 11V3.5h2V5H5V3.5h2V5h1.5V3.5h2V11H7.2V8.3H4.8V11z" fill="currentColor"/></svg>';
-var ZAEHLER=["gift","steuer","energie","erfahrung","sturm","schaetze"];
-/* Sprachen: Deutsch, Englisch, Spanisch, Franzoesisch. Wahl im Menue, sonst Geraetesprache, sonst Englisch; ?lang=de|en|es|fr in der Adresse setzt sie fest. */
-var SPRACHEN=[["de","Deutsch"],["en","English"],["es","Español"],["fr","Français"]];
+var ZAEHLER=["gift","steuer","energie","erfahrung","sturm","schaetze","strahlung"];
+/* Sprachen: Deutsch, Englisch, Spanisch, Franzoesisch, Italienisch, Portugiesisch. Wahl im Menue, sonst Geraetesprache, sonst Englisch; ?lang=de|en|es|fr in der Adresse setzt sie fest. */
+var SPRACHEN=[["de","Deutsch"],["en","English"],["es","Español"],["fr","Français"],["it","Italiano"],["pt","Português"]];
 var TXT={
 de:{spieler:function(n){return"Spieler "+n;},tisch:"Spieltisch",menueAuf:"Menü öffnen",zumTisch:"Zum Tisch",sprache:"Sprache",anzahl:"Spieler",start:"Startleben",namen:"Namen und Farben",
   cmdLeben:"Commander-Schaden zieht Leben ab",wach:"Bildschirm anlassen",wuerfeln:"Würfeln",w6:"W6 werfen",w20:"W20 werfen",muenze:"Münze werfen",startspieler:"Startspieler losen",
@@ -229,7 +258,14 @@ de:{spieler:function(n){return"Spieler "+n;},tisch:"Spieltisch",menueAuf:"Menü 
   uhrHinweis:"Wer beginnt, tippt im eigenen Feld auf „Ich beginne“. „Startspieler losen“ startet die Uhr auch.",
   uhrRegel:"Jeder beendet seinen Zug im eigenen Feld, dann ist der Nächste im Uhrzeigersinn dran. Sturm geht beim Zugwechsel auf 0.",
   uhrStatus:function(z,n,d){return"Zug "+z+" · "+n+" ist dran · "+d;},zug:function(n){return"Zug "+n;},
-  verlauf:"Verlauf",verlaufLeer:"Noch keine Änderungen in diesem Spiel.",grafik:"Lebenspunkte im Spielverlauf",cmdVon:function(n){return"Commander-Schaden von "+n;}},
+  verlauf:"Verlauf",verlaufLeer:"Noch keine Änderungen in diesem Spiel.",grafik:"Lebenspunkte im Spielverlauf",cmdVon:function(n){return"Commander-Schaden von "+n;},
+  strahlung:"Strahlung",deckPh:"Deck (optional)",deckVon:function(n){return"Deck von "+n;},stamm:"Stammspieler",
+  stammLeer:"Namen, die du oben einträgst, merkt sich die App hier. Ein Tipp setzt den Spieler auf den nächsten freien Platz.",
+  stammVoll:"Alle Plätze sind besetzt. Ein Tipp auf einen markierten Namen macht seinen Platz frei.",bearbeiten:"Bearbeiten",stammWeg:function(n){return n+" aus der Liste löschen";},
+  spielEnde:"Spiel beenden",endeTitel:"Spielende",sieger:"Gewinner",siegerWahl:"Wer hat gewonnen? Die Wahl zählt in der Statistik.",gespeichert:"In der Statistik gespeichert. Ein Tipp auf einen anderen Namen ändert es.",
+  dauer:"Dauer",zeit:"Zeit",zuege:function(n){return n===1?"1 Zug":n+" Züge";},teilen:"Teilen",kopiert:"Kopiert",verlaufTeilen:"Verlauf teilen",
+  statistik:"Statistik",statLeer:"Noch keine Partien gespeichert. Am Spielende den Gewinner antippen.",partien:function(n){return n===1?"1 Partie":n+" Partien";},
+  siege:function(w,g,p){return w+" von "+g+" gewonnen ("+p+" %)";},decks:"Decks",statLoeschen:"Statistik löschen"},
 en:{spieler:function(n){return"Player "+n;},tisch:"Game table",menueAuf:"Open menu",zumTisch:"Back to table",sprache:"Language",anzahl:"Players",start:"Starting life",namen:"Names and colors",
   cmdLeben:"Commander damage reduces life",wach:"Keep screen on",wuerfeln:"Dice",w6:"Roll D6",w20:"Roll D20",muenze:"Flip a coin",startspieler:"Pick first player",
   ergebnisLeer:"The result appears here.",spiel:"Game",undo:"Undo last change",voll:"Full screen",neu:"New game",neuSicher:"Sure? Tap again",
@@ -250,7 +286,14 @@ en:{spieler:function(n){return"Player "+n;},tisch:"Game table",menueAuf:"Open me
   uhrHinweis:"Whoever goes first taps “I go first” in their own field. “Pick first player” also starts the clock.",
   uhrRegel:"Everyone ends their turn in their own field, then play passes clockwise. Storm resets to 0 when the turn passes.",
   uhrStatus:function(z,n,d){return"Turn "+z+" · "+n+" to play · "+d;},zug:function(n){return"Turn "+n;},
-  verlauf:"History",verlaufLeer:"No changes in this game yet.",grafik:"Life over the game",cmdVon:function(n){return"Commander damage from "+n;}},
+  verlauf:"History",verlaufLeer:"No changes in this game yet.",grafik:"Life over the game",cmdVon:function(n){return"Commander damage from "+n;},
+  strahlung:"Radiation",deckPh:"Deck (optional)",deckVon:function(n){return"Deck of "+n;},stamm:"Regular players",
+  stammLeer:"Names you enter above are remembered here. A tap puts the player in the next free seat.",
+  stammVoll:"All seats are taken. Tap a highlighted name to free up their seat.",bearbeiten:"Edit",stammWeg:function(n){return"Remove "+n+" from the list";},
+  spielEnde:"End game",endeTitel:"Game over",sieger:"Winner",siegerWahl:"Who won? Your choice counts in the stats.",gespeichert:"Saved to the stats. Tap another name to change it.",
+  dauer:"Duration",zeit:"Time",zuege:function(n){return n===1?"1 turn":n+" turns";},teilen:"Share",kopiert:"Copied",verlaufTeilen:"Share history",
+  statistik:"Stats",statLeer:"No games saved yet. Tap the winner when a game ends.",partien:function(n){return n===1?"1 game":n+" games";},
+  siege:function(w,g,p){return w+" of "+g+" won ("+p+"%)";},decks:"Decks",statLoeschen:"Delete stats"},
 es:{spieler:function(n){return"Jugador "+n;},tisch:"Mesa de juego",menueAuf:"Abrir menú",zumTisch:"Volver a la mesa",sprache:"Idioma",anzahl:"Jugadores",start:"Vidas iniciales",namen:"Nombres y colores",
   cmdLeben:"El daño de comandante resta vidas",wach:"Mantener la pantalla encendida",wuerfeln:"Dados",w6:"Tirar D6",w20:"Tirar D20",muenze:"Lanzar moneda",startspieler:"Sortear quién empieza",
   ergebnisLeer:"El resultado aparece aquí.",spiel:"Partida",undo:"Deshacer último cambio",voll:"Pantalla completa",neu:"Nueva partida",neuSicher:"¿Seguro? Toca otra vez",
@@ -271,7 +314,14 @@ es:{spieler:function(n){return"Jugador "+n;},tisch:"Mesa de juego",menueAuf:"Abr
   uhrHinweis:"Quien empiece toca «Empiezo yo» en su propia zona. «Sortear quién empieza» también pone en marcha el reloj.",
   uhrRegel:"Cada uno termina su turno en su propia zona y luego le toca al siguiente en el sentido de las agujas del reloj. La tormenta vuelve a 0 al pasar el turno.",
   uhrStatus:function(z,n,d){return"Turno "+z+" · le toca a "+n+" · "+d;},zug:function(n){return"Turno "+n;},
-  verlauf:"Historial",verlaufLeer:"Todavía no hay cambios en esta partida.",grafik:"Vidas a lo largo de la partida",cmdVon:function(n){return"Daño de comandante de "+n;}},
+  verlauf:"Historial",verlaufLeer:"Todavía no hay cambios en esta partida.",grafik:"Vidas a lo largo de la partida",cmdVon:function(n){return"Daño de comandante de "+n;},
+  strahlung:"Radiación",deckPh:"Mazo (opcional)",deckVon:function(n){return"Mazo de "+n;},stamm:"Jugadores habituales",
+  stammLeer:"Los nombres que escribas arriba se guardan aquí. Un toque sienta al jugador en el siguiente sitio libre.",
+  stammVoll:"Todos los sitios están ocupados. Toca un nombre marcado para liberar su sitio.",bearbeiten:"Editar",stammWeg:function(n){return"Quitar a "+n+" de la lista";},
+  spielEnde:"Terminar partida",endeTitel:"Fin de la partida",sieger:"Ganador",siegerWahl:"¿Quién ha ganado? La elección cuenta en las estadísticas.",gespeichert:"Guardado en las estadísticas. Toca otro nombre para cambiarlo.",
+  dauer:"Duración",zeit:"Tiempo",zuege:function(n){return n===1?"1 turno":n+" turnos";},teilen:"Compartir",kopiert:"Copiado",verlaufTeilen:"Compartir historial",
+  statistik:"Estadísticas",statLeer:"Aún no hay partidas guardadas. Al terminar, toca al ganador.",partien:function(n){return n===1?"1 partida":n+" partidas";},
+  siege:function(w,g,p){return"Victorias: "+w+" de "+g+" ("+p+" %)";},decks:"Mazos",statLoeschen:"Borrar estadísticas"},
 fr:{spieler:function(n){return"Joueur "+n;},tisch:"Table de jeu",menueAuf:"Ouvrir le menu",zumTisch:"Retour à la table",sprache:"Langue",anzahl:"Joueurs",start:"Points de vie de départ",namen:"Noms et couleurs",
   cmdLeben:"Les blessures de commandant retirent des points de vie",wach:"Garder l'écran allumé",wuerfeln:"Dés",w6:"Lancer un D6",w20:"Lancer un D20",muenze:"Lancer une pièce",startspieler:"Tirer le premier joueur",
   ergebnisLeer:"Le résultat s'affiche ici.",spiel:"Partie",undo:"Annuler la dernière modification",voll:"Plein écran",neu:"Nouvelle partie",neuSicher:"Sûr ? Touchez encore",
@@ -292,7 +342,70 @@ fr:{spieler:function(n){return"Joueur "+n;},tisch:"Table de jeu",menueAuf:"Ouvri
   uhrHinweis:"Le premier joueur touche «\u00a0Je commence\u00a0» dans sa propre zone. «\u00a0Tirer le premier joueur\u00a0» lance aussi l'horloge.",
   uhrRegel:"Chacun termine son tour dans sa propre zone, puis c'est au suivant dans le sens des aiguilles d'une montre. Le déluge revient à 0 à chaque changement de tour.",
   uhrStatus:function(z,n,d){return"Tour "+z+" · au tour de "+n+" · "+d;},zug:function(n){return"Tour "+n;},
-  verlauf:"Historique",verlaufLeer:"Aucun changement dans cette partie pour l'instant.",grafik:"Points de vie au fil de la partie",cmdVon:function(n){return"Blessures de commandant de "+n;}}
+  verlauf:"Historique",verlaufLeer:"Aucun changement dans cette partie pour l'instant.",grafik:"Points de vie au fil de la partie",cmdVon:function(n){return"Blessures de commandant de "+n;},
+  strahlung:"Radiation",deckPh:"Deck (facultatif)",deckVon:function(n){return"Deck de "+n;},stamm:"Joueurs habituels",
+  stammLeer:"Les noms saisis plus haut sont mémorisés ici. Un toucher place le joueur à la prochaine place libre.",
+  stammVoll:"Toutes les places sont prises. Touchez un nom en surbrillance pour libérer sa place.",bearbeiten:"Modifier",stammWeg:function(n){return"Retirer "+n+" de la liste";},
+  spielEnde:"Terminer la partie",endeTitel:"Fin de partie",sieger:"Gagnant",siegerWahl:"Qui a gagné\u00a0? Le choix compte dans les statistiques.",gespeichert:"Enregistré dans les statistiques. Touchez un autre nom pour modifier.",
+  dauer:"Durée",zeit:"Temps",zuege:function(n){return n===1?"1 tour":n+" tours";},teilen:"Partager",kopiert:"Copié",verlaufTeilen:"Partager l'historique",
+  statistik:"Statistiques",statLeer:"Aucune partie enregistrée. En fin de partie, touchez le gagnant.",partien:function(n){return n===1?"1 partie":n+" parties";},
+  siege:function(w,g,p){return w+(w>1?" victoires":" victoire")+" sur "+g+" ("+p+"\u00a0%)";},decks:"Decks",statLoeschen:"Effacer les statistiques"},
+it:{spieler:function(n){return"Giocatore "+n;},tisch:"Tavolo da gioco",menueAuf:"Apri il menu",zumTisch:"Torna al tavolo",sprache:"Lingua",anzahl:"Giocatori",start:"Punti vita iniziali",namen:"Nomi e colori",
+  cmdLeben:"Il danno da comandante toglie punti vita",wach:"Tieni lo schermo acceso",wuerfeln:"Dadi",w6:"Tira D6",w20:"Tira D20",muenze:"Lancia una moneta",startspieler:"Sorteggia chi inizia",
+  ergebnisLeer:"Il risultato compare qui.",spiel:"Partita",undo:"Annulla l'ultima modifica",voll:"Schermo intero",neu:"Nuova partita",neuSicher:"Sicuro? Tocca di nuovo",
+  hilfe:"Tocca a sinistra per togliere un punto vita, a destra per aggiungerlo. Tieni premuto per continuare a contare. La barra in basso di ogni zona apre danno da comandante, veleno, tassa e altro. La partita resta solo su questo dispositivo.",
+  minusLeben:"Togli un punto vita",plusLeben:"Aggiungi un punto vita",ausgeschieden:"Eliminato",rausLeben:"Nessun punto vita",rausGift:"10 segnalini veleno",
+  rausCmd:function(v){return"21 danni da comandante"+(v?" da "+v:"");},
+  commander:"Comandante",gift:"Veleno",steuer:"Tassa",energie:"Energia",erfahrung:"Esperienza",mehr:"Altro",monarch:"Monarca",initiative:"Iniziativa",partner:"Comandante partner",
+  fertig:"Fatto",cmdErhalten:"Danno da comandante subito",keineGegner:"Nessun avversario in gioco.",cmdRegel:"Con 21 danni dallo stesso comandante sei eliminato.",cmdAbzug:" Il danno viene tolto anche dai punti vita.",
+  zaehler:"Segnalini",gewirkt:function(n){return"Comandante lanciato (tassa +"+n+")";},minusEins:function(l){return l+" meno uno";},plusEins:function(l){return l+" più uno";},
+  farbeVon:function(n){return"Cambia il colore di "+n;},nameVon:function(i){return"Nome del giocatore "+i;},lp:function(n){return n+" PV";},
+  startGilt:function(v){return"I "+v+" punti vita iniziali valgono dalla prossima partita.";},undoOk:"Ultima modifica annullata.",undoLeer:"Non c'è altro da annullare.",
+  neuOk:function(v){return"Nuova partita con "+v+" punti vita.";},vollNein:"Lo schermo intero non è disponibile qui.",
+  wurf:function(w,n){return"D"+w+": <b>"+n+"</b>";},muenzeErg:function(x){return"Moneta: <b>"+x+"</b>";},kopf:"Testa",zahl:"Croce",beginnt:function(n){return"Inizia <b>"+n+"</b>";},
+  wachNein:"Questo dispositivo non può tenere lo schermo acceso.",wachAbgelehnt:"La richiesta di tenere lo schermo acceso è stata rifiutata.",
+  sturm:"Tempesta",schaetze:"Tesori",segen:"Benedizione della città",segenKurz:"Benedizione",tagnacht:"Giorno e notte",aus:"Disattivato",tag:"Giorno",nacht:"Notte",tagWechsel:"Passa tra giorno e notte",
+  tagHinweis:"Tocca il badge in una zona per passare tra giorno e notte.",logTag:"Diventa giorno",logNacht:"Diventa notte",logTagAus:"Giorno e notte terminati",
+  uhr:"Orologio dei turni con tempo per giocatore",zugBeginnen:"Inizio io",zugBeenden:"Fine turno",pausiert:"In pausa",uhrPause:"Metti in pausa l'orologio",uhrWeiter:"Riprendi l'orologio",uhrNeu:"Azzera l'orologio",
+  uhrHinweis:"Chi inizia tocca «Inizio io» nella propria zona. Anche «Sorteggia chi inizia» avvia l'orologio.",
+  uhrRegel:"Ognuno termina il proprio turno nella sua zona, poi tocca al successivo in senso orario. La tempesta torna a 0 a ogni cambio di turno.",
+  uhrStatus:function(z,n,d){return"Turno "+z+" · tocca a "+n+" · "+d;},zug:function(n){return"Turno "+n;},
+  verlauf:"Cronologia",verlaufLeer:"Ancora nessuna modifica in questa partita.",grafik:"Punti vita durante la partita",cmdVon:function(n){return"Danno da comandante di "+n;},
+  strahlung:"Radiazioni",deckPh:"Mazzo (facoltativo)",deckVon:function(n){return"Mazzo di "+n;},stamm:"Giocatori abituali",
+  stammLeer:"I nomi inseriti sopra vengono ricordati qui. Un tocco mette il giocatore al primo posto libero.",
+  stammVoll:"Tutti i posti sono occupati. Tocca un nome evidenziato per liberare il suo posto.",bearbeiten:"Modifica",stammWeg:function(n){return"Rimuovi "+n+" dall'elenco";},
+  spielEnde:"Termina la partita",endeTitel:"Fine partita",sieger:"Vincitore",siegerWahl:"Chi ha vinto? La scelta conta nelle statistiche.",gespeichert:"Salvato nelle statistiche. Tocca un altro nome per cambiarlo.",
+  dauer:"Durata",zeit:"Tempo",zuege:function(n){return n===1?"1 turno":n+" turni";},teilen:"Condividi",kopiert:"Copiato",verlaufTeilen:"Condividi la cronologia",
+  statistik:"Statistiche",statLeer:"Nessuna partita salvata. A fine partita tocca il vincitore.",partien:function(n){return n===1?"1 partita":n+" partite";},
+  siege:function(w,g,p){return"Vittorie: "+w+" su "+g+" ("+p+"%)";},decks:"Mazzi",statLoeschen:"Cancella le statistiche"},
+pt:{spieler:function(n){return"Jogador "+n;},tisch:"Mesa de jogo",menueAuf:"Abrir menu",zumTisch:"Voltar à mesa",sprache:"Idioma",anzahl:"Jogadores",start:"Vida inicial",namen:"Nomes e cores",
+  cmdLeben:"Dano de comandante tira pontos de vida",wach:"Manter a tela ligada",wuerfeln:"Dados",w6:"Rolar D6",w20:"Rolar D20",muenze:"Jogar moeda",startspieler:"Sortear quem começa",
+  ergebnisLeer:"O resultado aparece aqui.",spiel:"Partida",undo:"Desfazer última alteração",voll:"Tela cheia",neu:"Nova partida",neuSicher:"Tem certeza? Toque de novo",
+  hilfe:"Toque à esquerda para perder um ponto de vida e à direita para ganhar um. Segure para continuar contando. A barra embaixo de cada área abre dano de comandante, veneno, imposto e mais. A partida fica salva só neste aparelho.",
+  minusLeben:"Perder um ponto de vida",plusLeben:"Ganhar um ponto de vida",ausgeschieden:"Eliminado",rausLeben:"Sem pontos de vida",rausGift:"10 marcadores de veneno",
+  rausCmd:function(v){return"21 de dano de comandante"+(v?" de "+v:"");},
+  commander:"Comandante",gift:"Veneno",steuer:"Imposto",energie:"Energia",erfahrung:"Experiência",mehr:"Mais",monarch:"Monarca",initiative:"Iniciativa",partner:"Comandante parceiro",
+  fertig:"Pronto",cmdErhalten:"Dano de comandante recebido",keineGegner:"Nenhum adversário na partida.",cmdRegel:"Com 21 de dano do mesmo comandante você está fora.",cmdAbzug:" O dano também sai dos pontos de vida.",
+  zaehler:"Marcadores",gewirkt:function(n){return"Comandante conjurado (imposto +"+n+")";},minusEins:function(l){return l+" menos um";},plusEins:function(l){return l+" mais um";},
+  farbeVon:function(n){return"Mudar a cor de "+n;},nameVon:function(i){return"Nome do jogador "+i;},lp:function(n){return n+" PV";},
+  startGilt:function(v){return"A vida inicial de "+v+" vale a partir da próxima partida.";},undoOk:"Última alteração desfeita.",undoLeer:"Não há mais nada para desfazer.",
+  neuOk:function(v){return"Nova partida com "+v+" pontos de vida.";},vollNein:"A tela cheia não está disponível aqui.",
+  wurf:function(w,n){return"D"+w+": <b>"+n+"</b>";},muenzeErg:function(x){return"Moeda: <b>"+x+"</b>";},kopf:"Cara",zahl:"Coroa",beginnt:function(n){return"<b>"+n+"</b> começa";},
+  wachNein:"Este aparelho não consegue manter a tela ligada.",wachAbgelehnt:"O pedido para manter a tela ligada foi recusado.",
+  sturm:"Tempestade",schaetze:"Tesouros",segen:"Bênção da cidade",segenKurz:"Bênção",tagnacht:"Dia e noite",aus:"Desligado",tag:"Dia",nacht:"Noite",tagWechsel:"Alternar entre dia e noite",
+  tagHinweis:"Toque no selo de uma área para alternar entre dia e noite.",logTag:"Torna-se dia",logNacht:"Torna-se noite",logTagAus:"Dia e noite encerrados",
+  uhr:"Relógio de turnos com tempo por jogador",zugBeginnen:"Eu começo",zugBeenden:"Encerrar turno",pausiert:"Pausado",uhrPause:"Pausar relógio",uhrWeiter:"Retomar relógio",uhrNeu:"Zerar relógio",
+  uhrHinweis:"Quem começa toca em “Eu começo” na própria área. “Sortear quem começa” também inicia o relógio.",
+  uhrRegel:"Cada um encerra o turno na própria área e então é a vez do próximo em sentido horário. A tempestade volta a 0 a cada troca de turno.",
+  uhrStatus:function(z,n,d){return"Turno "+z+" · vez de "+n+" · "+d;},zug:function(n){return"Turno "+n;},
+  verlauf:"Histórico",verlaufLeer:"Ainda não há alterações nesta partida.",grafik:"Pontos de vida ao longo da partida",cmdVon:function(n){return"Dano de comandante de "+n;},
+  strahlung:"Radiação",deckPh:"Deck (opcional)",deckVon:function(n){return"Deck de "+n;},stamm:"Jogadores frequentes",
+  stammLeer:"Os nomes digitados acima ficam guardados aqui. Um toque coloca o jogador no próximo lugar livre.",
+  stammVoll:"Todos os lugares estão ocupados. Toque num nome destacado para liberar o lugar dele.",bearbeiten:"Editar",stammWeg:function(n){return"Remover "+n+" da lista";},
+  spielEnde:"Encerrar partida",endeTitel:"Fim de jogo",sieger:"Vencedor",siegerWahl:"Quem venceu? A escolha conta nas estatísticas.",gespeichert:"Salvo nas estatísticas. Toque em outro nome para mudar.",
+  dauer:"Duração",zeit:"Tempo",zuege:function(n){return n===1?"1 turno":n+" turnos";},teilen:"Compartilhar",kopiert:"Copiado",verlaufTeilen:"Compartilhar histórico",
+  statistik:"Estatísticas",statLeer:"Nenhuma partida salva. No fim do jogo, toque no vencedor.",partien:function(n){return n===1?"1 partida":n+" partidas";},
+  siege:function(w,g,p){return"Vitórias: "+w+" de "+g+" ("+p+"%)";},decks:"Decks",statLoeschen:"Apagar estatísticas"}
 };
 function spracheErmitteln(){
   var c="";
@@ -311,14 +424,16 @@ function texteSetzen(){
   Array.prototype.forEach.call(document.querySelectorAll("[data-t-aria]"),function(el){el.setAttribute("aria-label",t(el.dataset.tAria));});
 }
 
-function spieler(i,leben){return {id:"p"+i+"-"+Math.random().toString(36).slice(2,7),name:t("spieler",i+1),farbe:FARBEN[i],leben:leben,gift:0,energie:0,erfahrung:0,steuer:0,partner:false,cmd:{}};}
-function neuerZustand(n,leben){var s={n:n,start:leben,anfang:leben,cmdLeben:true,monarch:null,initiative:null,spieler:[]};for(var i=0;i<6;i++)s.spieler.push(spieler(i,leben));return normalisieren(s);}
+function spieler(i,leben){return {id:"p"+i+"-"+Math.random().toString(36).slice(2,7),name:t("spieler",i+1),farbe:FARBEN[i],deck:"",leben:leben,gift:0,energie:0,erfahrung:0,steuer:0,partner:false,cmd:{}};}
+function neuerZustand(n,leben){var s={n:n,start:leben,anfang:leben,beginn:0,ende:0,endeGezeigt:false,cmdLeben:true,monarch:null,initiative:null,spieler:[]};for(var i=0;i<6;i++)s.spieler.push(spieler(i,leben));return normalisieren(s);}
 /* Aeltere gespeicherte Spielstaende bekommen die neuen Felder (Sturm, Schaetze, Segen, Tag/Nacht, Zuguhr, Verlauf) */
 function normalisieren(s){
-  s.spieler.forEach(function(p){ZAEHLER.forEach(function(k){p[k]=p[k]||0;});p.segen=!!p.segen;p.cmd=p.cmd||{};});
+  s.spieler.forEach(function(p){ZAEHLER.forEach(function(k){p[k]=p[k]||0;});p.segen=!!p.segen;p.cmd=p.cmd||{};p.deck=p.deck||"";});
   if(s.tag!=="tag"&&s.tag!=="nacht")s.tag=null;
   if(!Array.isArray(s.log))s.log=[];
   if(!s.anfang)s.anfang=s.start;
+  if(!s.beginn)s.beginn=s.log.length?s.log[0].t:0;
+  s.ende=s.ende||0;s.endeGezeigt=!!s.endeGezeigt;
   if(!s.uhr||typeof s.uhr!=="object")s.uhr={an:false,aktiv:null,start:0,pause:0,zug:0,zeit:{}};
   if(!s.uhr.zeit)s.uhr.zeit={};
   return s;
@@ -357,7 +472,7 @@ function sitze(n){
 }
 
 var tisch=document.getElementById("tisch");
-var felder=[];var offenesBlatt=null;var deltas={};
+var felder=[];var offenesBlatt=null;var deltas={};var haltStopps=[];
 var ro=("ResizeObserver" in window)?new ResizeObserver(function(es){es.forEach(function(e){groesse(e.target);});}):null;
 
 function groesse(f){
@@ -387,7 +502,7 @@ function engPruefen(f){
 }
 
 function aufbauen(){
-  var L=sitze(S.n);offenesBlatt=null;tisch.innerHTML="";felder=[];
+  var L=sitze(S.n);offenesBlatt=null;tisch.innerHTML="";felder=[];haltStopps=[];
   tisch.style.gridTemplateColumns="repeat("+L.c+",minmax(0,1fr))";tisch.style.gridTemplateRows="repeat("+L.r+",minmax(0,1fr))";
   aktive().forEach(function(p,i){
     var s=L.s[i];var f=document.createElement("section");f.className="feld";f.dataset.rot=s[3];f.dataset.i=i;
@@ -423,6 +538,7 @@ function zeichnen(){
       (p.erfahrung?'<button type="button" class="chip" data-blatt="'+i+'">'+t("erfahrung")+'<b>'+p.erfahrung+'</b></button>':'')+
       (p.sturm?'<button type="button" class="chip" data-blatt="'+i+'">'+t("sturm")+'<b>'+p.sturm+'</b></button>':'')+
       (p.schaetze?'<button type="button" class="chip" data-blatt="'+i+'">'+t("schaetze")+'<b>'+p.schaetze+'</b></button>':'')+
+      (p.strahlung?'<button type="button" class="chip" data-blatt="'+i+'">'+t("strahlung")+'<b>'+p.strahlung+'</b></button>':'')+
       '<button type="button" class="chip" data-blatt="'+i+'">'+t("mehr")+'</button>';
     var d=deltas[p.id],de=f.querySelector(".delta");
     if(d&&d.wert){de.textContent=(d.wert>0?"+":"−")+Math.abs(d.wert);de.classList.add("an");}else{de.classList.remove("an");}
@@ -436,11 +552,12 @@ function leben(i,d){
   var p=S.spieler[i];merken(true);p.leben+=d;protokoll({p:p.id,a:"leben",d:d,w:p.leben});
   var dd=deltas[p.id]||(deltas[p.id]={wert:0,t:0});dd.wert+=d;clearTimeout(dd.t);
   dd.t=setTimeout(function(){dd.wert=0;zeichnen();},1800);
-  zeichnen();
+  zeichnen();endePruefen();
 }
 function halten(btn,i,d){
   var t1=0,t2=0;
   function stop(){clearTimeout(t1);clearInterval(t2);t1=t2=0;}
+  haltStopps.push(stop);
   btn.addEventListener("pointerdown",function(e){e.preventDefault();stop();leben(i,d);
     t1=setTimeout(function(){var n=0;t2=setInterval(function(){n++;leben(i,n>12?d*5:d);},140);},450);});
   ["pointerup","pointerleave","pointercancel"].forEach(function(ev){btn.addEventListener(ev,stop);});
@@ -482,6 +599,7 @@ function blattFuellen(i){
   h+=zeile(t("erfahrung"),null,"erfahrung",p.erfahrung,false,i);
   h+=zeile(t("sturm"),null,"sturm",p.sturm,false,i);
   h+=zeile(t("schaetze"),null,"schaetze",p.schaetze,false,i);
+  h+=zeile(t("strahlung"),null,"strahlung",p.strahlung,false,i);
   h+='<div class="reihe">'+
      '<button type="button" class="pille" data-akt="monarch" data-i="'+i+'" aria-pressed="'+(S.monarch===p.id)+'">'+t("monarch")+'</button>'+
      '<button type="button" class="pille" data-akt="initiative" data-i="'+i+'" aria-pressed="'+(S.initiative===p.id)+'">'+t("initiative")+'</button>'+
@@ -498,34 +616,38 @@ function blattAktion(a){
   else if(akt==="segen"){p.segen=!p.segen;}
   else if(akt==="monarch"||akt==="initiative"){S[akt]=(S[akt]===p.id)?null:p.id;}
   else if(akt==="partner"){p.partner=!p.partner;if(!p.partner){S.spieler.forEach(function(o){delete o.cmd[p.id+":b"];});}}
-  zeichnen();
+  zeichnen();endePruefen();
 }
 
 /* Menue */
-var menue=document.getElementById("menue");
+var menue=document.getElementById("menue"),ende=document.getElementById("ende");
 document.getElementById("stein").addEventListener("click",function(){blattSchliessen();menueFuellen();menue.hidden=false;document.getElementById("zu").focus();});
 document.getElementById("zu").addEventListener("click",function(){menue.hidden=true;});
 menue.addEventListener("click",function(e){if(e.target===menue)menue.hidden=true;});
-document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!menue.hidden)menue.hidden=true;else blattSchliessen();}});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!ende.hidden)ende.hidden=true;else if(!menue.hidden)menue.hidden=true;else blattSchliessen();}});
 function seg(el,werte,aktuell,fn){el.innerHTML="";werte.forEach(function(v){var b=document.createElement("button");b.type="button";b.textContent=v;b.setAttribute("aria-pressed",String(v===aktuell));b.addEventListener("click",function(){fn(v);});el.appendChild(b);});}
 function menueFuellen(){
   var sp=document.getElementById("sprache");sp.innerHTML="";
   SPRACHEN.forEach(function(s){var b=document.createElement("button");b.type="button";b.lang=s[0];b.textContent=s[1];b.setAttribute("aria-pressed",String(s[0]===SPR));b.addEventListener("click",function(){spracheSetzen(s[0]);});sp.appendChild(b);});
   seg(document.getElementById("anzahl"),[2,3,4,5,6],S.n,function(v){merken(false);S.n=v;aufbauen();menueFuellen();});
-  seg(document.getElementById("start"),[20,30,40],S.start,function(v){S.start=v;speichern();menueFuellen();ergebnis(t("startGilt",v));});
+  seg(document.getElementById("start"),[20,25,30,40],S.start,function(v){S.start=v;speichern();menueFuellen();ergebnis(t("startGilt",v));});
   var nm=document.getElementById("namen");nm.innerHTML="";
   aktive().forEach(function(p,i){
     var fb=document.createElement("button");fb.type="button";fb.className="farbe";fb.style.background=p.farbe;fb.setAttribute("aria-label",t("farbeVon",p.name));
-    fb.addEventListener("click",function(){p.farbe=FARBEN[(FARBEN.indexOf(p.farbe)+1)%FARBEN.length];fb.style.background=p.farbe;zeichnen();});
+    fb.addEventListener("click",function(){p.farbe=FARBEN[(FARBEN.indexOf(p.farbe)+1)%FARBEN.length];fb.style.background=p.farbe;zeichnen();stammMerken(p);stammZeigen();});
     var inp=document.createElement("input");inp.id="name-"+i;inp.value=p.name;inp.maxLength=18;inp.setAttribute("aria-label",t("nameVon",i+1));
     inp.addEventListener("input",function(){p.name=inp.value||t("spieler",i+1);zeichnen();});
+    inp.addEventListener("change",function(){stammMerken(p);stammZeigen();});
+    var dk=document.createElement("input");dk.id="deck-"+i;dk.value=p.deck||"";dk.maxLength=24;dk.placeholder=t("deckPh");dk.setAttribute("aria-label",t("deckVon",p.name));
+    dk.addEventListener("input",function(){p.deck=dk.value;speichern();});
+    dk.addEventListener("change",function(){stammMerken(p);stammZeigen();});
     var lv=document.createElement("span");lv.className="klein";lv.textContent=t("lp",p.leben);
-    nm.appendChild(fb);nm.appendChild(inp);nm.appendChild(lv);
+    nm.appendChild(fb);nm.appendChild(inp);nm.appendChild(dk);nm.appendChild(lv);
   });
   document.getElementById("cmdleben").setAttribute("aria-pressed",String(S.cmdLeben));
   document.getElementById("wach").setAttribute("aria-pressed",String(!!sperre));
   var neu=document.getElementById("neu");neu.classList.remove("sicher");neu.textContent=t("neu");
-  uhrMenue();tagMenue();protokollZeigen();
+  uhrMenue();tagMenue();protokollZeigen();stammZeigen();statZeigen();
 }
 function spracheSetzen(c){
   if(!TXT[c])return;SPR=c;try{localStorage.setItem(KEY+"-sprache",c);}catch(e){}
@@ -534,12 +656,14 @@ function spracheSetzen(c){
 }
 document.getElementById("cmdleben").addEventListener("click",function(){S.cmdLeben=!S.cmdLeben;speichern();menueFuellen();});
 document.getElementById("undo").addEventListener("click",function(){var z=verlauf.pop();if(z){S=normalisieren(JSON.parse(z));aufbauen();menueFuellen();ergebnis(t("undoOk"));}else{ergebnis(t("undoLeer"));}});
-document.getElementById("neu").addEventListener("click",function(){
-  var b=this;if(!b.classList.contains("sicher")){b.classList.add("sicher");b.textContent=t("neuSicher");return;}
+/* Knoepfe mit Folgen brauchen einen zweiten Tipp */
+function sicherKnopf(b,fn){if(!b.classList.contains("sicher")){b.classList.add("sicher");b.textContent=t("neuSicher");return;}fn();}
+function neuesSpiel(){
   merken(false);var alt=S;S=neuerZustand(alt.n,alt.start);S.cmdLeben=alt.cmdLeben;S.uhr.an=!!alt.uhr.an;
-  S.spieler.forEach(function(p,i){p.name=alt.spieler[i].name;p.farbe=alt.spieler[i].farbe;});
+  S.spieler.forEach(function(p,i){p.name=alt.spieler[i].name;p.farbe=alt.spieler[i].farbe;p.deck=alt.spieler[i].deck||"";});
   deltas={};aufbauen();menueFuellen();ergebnis(t("neuOk",S.start));
-});
+}
+document.getElementById("neu").addEventListener("click",function(){sicherKnopf(this,neuesSpiel);});
 document.getElementById("voll").addEventListener("click",function(){var el=document.documentElement;try{if(document.fullscreenElement)document.exitFullscreen();else if(el.requestFullscreen)el.requestFullscreen().catch(function(){ergebnis(t("vollNein"));});else ergebnis(t("vollNein"));}catch(e){ergebnis(t("vollNein"));}});
 function ergebnis(html){document.getElementById("ergebnis").innerHTML=html;}
 function zufall(n){if(window.crypto&&crypto.getRandomValues){var a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]%n;}return Math.floor(Math.random()*n);}
@@ -554,7 +678,7 @@ Array.prototype.forEach.call(document.querySelectorAll("[data-wurf]"),function(b
 /* Verlauf: Aenderungen an Leben, Commander-Schaden und Gift, dazu Zugwechsel und Tag/Nacht.
    Schnelle Folgen beim selben Wert werden zu einem Eintrag zusammengefasst. */
 function protokoll(e){
-  var jetzt=Date.now(),L=S.log,z=L[L.length-1];
+  var jetzt=Date.now(),L=S.log,z=L[L.length-1];if(!S.beginn)S.beginn=jetzt;
   if(e.d!==undefined&&z&&z.p===e.p&&z.a===e.a&&z.q===e.q&&jetzt-z.t2<2500){
     z.d+=e.d;z.w=e.w;if(e.L!==undefined)z.L=e.L;z.t2=jetzt;if(!z.d)L.pop();return;}
   e.t=e.t2=jetzt;e.z=S.uhr.zug||0;L.push(e);if(L.length>250)L.shift();
@@ -565,6 +689,7 @@ function protokollZeigen(){
   S.spieler.forEach(function(p){N[p.id]=p.name;F[p.id]=p.farbe;});
   quellen().forEach(function(q){Q[q.key]=q.p.name+(q.teil?" "+q.teil:"");});
   grafikZeigen();
+  document.getElementById("verlaufteilen").hidden=!S.log.length;
   if(!S.log.length){ol.innerHTML='<li class="klein">'+esc(t("verlaufLeer"))+'</li>';return;}
   var h="";
   for(var j=S.log.length-1;j>=0;j--){
@@ -648,6 +773,140 @@ function tagMenue(){
   [[null,"aus"],["tag","tag"],["nacht","nacht"]].forEach(function(o){var b=document.createElement("button");b.type="button";b.textContent=t(o[1]);
     b.setAttribute("aria-pressed",String(S.tag===o[0]));b.addEventListener("click",function(){if(S.tag!==o[0])tagSetzen(o[0]);});el.appendChild(b);});
 }
+
+/* Stammspieler: eingetragene Namen merkt sich die App (nur auf diesem Geraet); ein Tipp setzt sie auf den naechsten freien Platz */
+var SKEY=KEY+"-stamm",stammEdit=false;
+function stammLaden(){try{var a=JSON.parse(localStorage.getItem(SKEY)||"[]");return Array.isArray(a)?a:[];}catch(e){return[];}}
+function stammSichern(a){try{localStorage.setItem(SKEY,JSON.stringify(a.slice(0,24)));}catch(e){}}
+function gleich(a,b){return String(a).trim().toLowerCase()===String(b).trim().toLowerCase();}
+function stammMerken(p){
+  var n=String(p.name||"").trim();if(!n||standardname(p.name,S.spieler.indexOf(p)))return;
+  var a=stammLaden().filter(function(x){return!gleich(x.name,n);});a.unshift({name:n,farbe:p.farbe,deck:p.deck||""});stammSichern(a);
+}
+function stammZeigen(){
+  var el=document.getElementById("stamm"),a=stammLaden(),info=document.getElementById("stamminfo"),eb=document.getElementById("stammedit");
+  el.innerHTML="";if(!a.length)stammEdit=false;eb.hidden=!a.length;eb.textContent=t(stammEdit?"fertig":"bearbeiten");
+  info.textContent=a.length?"":t("stammLeer");
+  a.forEach(function(x){
+    var sitz=aktive().filter(function(p){return gleich(p.name,x.name);})[0];
+    var b=document.createElement("button");b.type="button";b.className="pille mitpunkt";
+    b.innerHTML='<span class="punkt" style="background:'+esc(x.farbe)+'"></span>'+esc(x.name)+(stammEdit?' <span aria-hidden="true">×</span>':'');
+    if(stammEdit)b.setAttribute("aria-label",t("stammWeg",x.name));else b.setAttribute("aria-pressed",String(!!sitz));
+    b.addEventListener("click",function(){stammTipp(x,sitz);});el.appendChild(b);
+  });
+}
+function stammTipp(x,sitz){
+  if(stammEdit){stammSichern(stammLaden().filter(function(y){return!gleich(y.name,x.name);}));stammZeigen();return;}
+  var i;
+  if(sitz){i=S.spieler.indexOf(sitz);merken(false);sitz.name=t("spieler",i+1);sitz.farbe=FARBEN[i];sitz.deck="";}
+  else{
+    var frei=aktive().filter(function(p){return standardname(p.name,S.spieler.indexOf(p));})[0];
+    if(!frei){document.getElementById("stamminfo").textContent=t("stammVoll");return;}
+    merken(false);frei.name=x.name;frei.farbe=x.farbe;frei.deck=x.deck||"";
+  }
+  zeichnen();menueFuellen();
+}
+document.getElementById("stammedit").addEventListener("click",function(){stammEdit=!stammEdit;stammZeigen();});
+
+/* Spielende: Gewinner antippen (zaehlt in der Statistik), Dauer, Zeit je Spieler, Bericht teilen.
+   Eine Partie erkennt die App an ihrer Startzeit; so gibt es auch nach Rueckgaengig keine doppelten Eintraege. */
+var PKEY=KEY+"-partien";
+function partienLaden(){try{var a=JSON.parse(localStorage.getItem(PKEY)||"[]");return Array.isArray(a)?a:[];}catch(e){return[];}}
+function partienSichern(a){try{localStorage.setItem(PKEY,JSON.stringify(a.slice(-300)));}catch(e){}}
+function spielId(){return S.beginn?"g"+S.beginn:null;}
+function siegEintrag(){var id=spielId();if(!id)return null;return partienLaden().filter(function(x){return x.id===id;})[0]||null;}
+function lebende(){return aktive().filter(function(p){return!raus(p);});}
+function spielDauer(){return S.beginn?(S.ende||Date.now())-S.beginn:0;}
+function uhrzeit(ms){return new Date(ms).toLocaleTimeString(SPR,{hour:"2-digit",minute:"2-digit"});}
+function endeKopf(){
+  var z=[];if(S.beginn)z.push(new Date(S.beginn).toLocaleDateString(SPR)+", "+uhrzeit(S.beginn));
+  z.push(t("dauer")+" "+dauer(spielDauer()));if(S.uhr.zug)z.push(t("zuege",S.uhr.zug));return z.join(" · ");
+}
+function endePruefen(){
+  if(S.n<2||S.endeGezeigt||lebende().length!==1||siegEintrag())return;
+  S.endeGezeigt=true;speichern();
+  setTimeout(function(){if(menue.hidden&&ende.hidden&&lebende().length===1)endeOeffnen();},900);
+}
+function endeOeffnen(){haltStopps.forEach(function(f){f();});blattSchliessen();menue.hidden=true;endeFuellen();ende.hidden=false;document.getElementById("endezu").focus();}
+function endeFuellen(){
+  var r=siegEintrag(),sieg=r?r.siegId:null,rest=lebende(),vorschlag=(!sieg&&rest.length===1)?rest[0].id:null,mitZeit=S.uhr.an&&S.uhr.zug>0;
+  document.getElementById("endedaten").textContent=endeKopf();
+  var sw=document.getElementById("siegerwahl");sw.innerHTML="";
+  aktive().forEach(function(p){
+    var b=document.createElement("button");b.type="button";b.className="pille mitpunkt"+(p.id===vorschlag?" vorschlag":"");
+    b.innerHTML='<span class="punkt" style="background:'+p.farbe+'"></span>'+esc(p.name);b.setAttribute("aria-pressed",String(sieg===p.id));
+    b.addEventListener("click",function(){siegerSetzen(p.id);});sw.appendChild(b);
+  });
+  document.getElementById("siegerinfo").textContent=t(sieg?"gespeichert":"siegerWahl");
+  var h="";
+  aktive().forEach(function(p){var g=raus(p);
+    h+='<li'+(sieg===p.id?' class="sieg"':'')+'><span class="punkt" style="background:'+p.farbe+'"></span><span class="ln">'+esc(p.name)+'</span>'+(p.deck?'<span>'+esc(p.deck)+'</span>':'')+
+       '<span class="lw">'+(g?'<span class="rausgrund">'+esc(g)+'</span>':esc(t("lp",p.leben)))+(mitZeit?' · '+esc(t("zeit"))+' '+dauer(gesamt(p)):'')+'</span></li>';});
+  document.getElementById("endliste").innerHTML=h;
+  var nb=document.getElementById("endeneu");nb.classList.remove("sicher");nb.textContent=t("neu");
+}
+function siegerSetzen(id){
+  if(!S.beginn)S.beginn=Date.now();
+  var sid=spielId(),a=partienLaden(),r=a.filter(function(x){return x.id===sid;})[0],u=S.uhr;
+  a=a.filter(function(x){return x.id!==sid;});
+  if(!r||r.siegId!==id){
+    if(!S.ende)S.ende=Date.now();if(dranId()&&!u.pause)u.pause=Date.now();
+    a.push({id:sid,datum:S.beginn,dauer:spielDauer(),zuege:u.zug||0,siegId:id,
+      spieler:aktive().map(function(p){return{name:p.name,deck:p.deck||"",anonym:standardname(p.name,S.spieler.indexOf(p)),sieg:p.id===id};})});
+  }else{S.ende=0;}
+  partienSichern(a);zeichnen();endeFuellen();
+}
+document.getElementById("spielende").addEventListener("click",endeOeffnen);
+document.getElementById("endezu").addEventListener("click",function(){ende.hidden=true;});
+ende.addEventListener("click",function(e){if(e.target===ende)ende.hidden=true;});
+document.getElementById("endeneu").addEventListener("click",function(){sicherKnopf(this,function(){neuesSpiel();ende.hidden=true;});});
+
+/* Statistik ueber alle gespeicherten Partien, je Spieler (ohne Standardnamen) und je Deck */
+function statZeigen(){
+  var el=document.getElementById("statistik"),a=partienLaden(),wb=document.getElementById("statweg");
+  wb.classList.remove("sicher");wb.textContent=t("statLoeschen");wb.hidden=!a.length;
+  if(!a.length){el.innerHTML='<p class="klein">'+esc(t("statLeer"))+'</p>';return;}
+  var sp={},dk={};
+  function zaehl(o,name,sieg){var k=String(name).trim().toLowerCase();var x=o[k]||(o[k]={n:String(name).trim(),g:0,w:0});x.g++;if(sieg)x.w++;}
+  a.forEach(function(g){(g.spieler||[]).forEach(function(x){if(!x.anonym&&x.name)zaehl(sp,x.name,x.sieg);if(x.deck&&String(x.deck).trim())zaehl(dk,x.deck,x.sieg);});});
+  function liste(o){return Object.keys(o).map(function(k){return o[k];}).sort(function(x,y){return y.w-x.w||(y.w/y.g)-(x.w/x.g)||y.g-x.g;})
+    .map(function(x){return'<li><span class="ln">'+esc(x.n)+'</span><span class="lw">'+esc(t("siege",x.w,x.g,Math.round(100*x.w/x.g)))+'</span></li>';}).join("");}
+  var h='<p class="klein">'+esc(t("partien",a.length))+'</p>';
+  if(Object.keys(sp).length)h+='<h4>'+esc(t("anzahl"))+'</h4><ul class="protokoll">'+liste(sp)+'</ul>';
+  if(Object.keys(dk).length)h+='<h4>'+esc(t("decks"))+'</h4><ul class="protokoll">'+liste(dk)+'</ul>';
+  el.innerHTML=h;
+}
+document.getElementById("statweg").addEventListener("click",function(){sicherKnopf(this,function(){try{localStorage.removeItem(PKEY);}catch(e){}statZeigen();});});
+
+/* Teilen: Ergebnis und Verlauf als Text, ueber das Teilen-Menue des Handys oder in die Zwischenablage */
+function eintragText(e,N,Q){
+  var z=uhrzeit(e.t)+"  ";
+  if(e.a==="zug")return z+t("zug",e.z)+" · "+(N[e.p]||"");
+  if(e.a==="tag")return z+t(e.w==="tag"?"logTag":e.w==="nacht"?"logNacht":"logTagAus");
+  var s=z+(N[e.p]||"?")+" ";
+  if(e.a==="cmd")s+=t("cmdVon",Q[e.q]||N[String(e.q).split(":")[0]]||"?")+" ";else if(e.a==="gift")s+=t("gift")+" ";
+  s+=vz(e.d)+" → "+e.w;if(e.a==="cmd"&&e.L!==undefined&&e.L!==null)s+=" · "+t("lp",e.L);
+  return s;
+}
+function berichtText(){
+  var N={},Q={},r=siegEintrag(),sg=r?spielerVon(r.siegId):null,z=["LifeCounter by The Magical Brick",endeKopf()];
+  S.spieler.forEach(function(p){N[p.id]=p.name;});quellen().forEach(function(q){Q[q.key]=q.p.name+(q.teil?" "+q.teil:"");});
+  if(sg)z.push(t("sieger")+": "+sg.name+(sg.deck?" ("+sg.deck+")":""));
+  z.push("");
+  aktive().forEach(function(p){z.push("• "+p.name+(p.deck?" ("+p.deck+")":"")+": "+(raus(p)||t("lp",p.leben))+(S.uhr.an&&S.uhr.zug?" · "+t("zeit")+" "+dauer(gesamt(p)):""));});
+  if(S.log.length){z.push("");z.push(t("verlauf")+":");S.log.forEach(function(e){z.push(eintragText(e,N,Q));});}
+  z.push("");z.push(location.origin+location.pathname);
+  return z.join("\n");
+}
+function kopierAlt(text){var ta=document.createElement("textarea");ta.value=text;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand("copy");}catch(e){}ta.remove();return ok;}
+function teilen(btn){
+  var text=berichtText(),alt=btn.textContent;
+  function ok(){btn.textContent=t("kopiert");setTimeout(function(){btn.textContent=alt;},2000);}
+  function kopieren(){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(ok,function(){if(kopierAlt(text))ok();});}else if(kopierAlt(text))ok();}
+  if(navigator.share){navigator.share({title:"LifeCounter",text:text}).catch(function(err){if(!err||err.name!=="AbortError")kopieren();});}else kopieren();
+}
+document.getElementById("verlaufteilen").addEventListener("click",function(){teilen(this);});
+document.getElementById("endeteilen").addEventListener("click",function(){teilen(this);});
 
 /* Bildschirm wach halten */
 var sperre=null;
