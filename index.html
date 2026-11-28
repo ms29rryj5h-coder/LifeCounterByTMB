@@ -97,7 +97,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .seg{display:flex;gap:6px;flex-wrap:wrap}
 .seg button{min-width:44px;padding:9px 12px;border-radius:10px;background:rgba(255,255,255,.07);font-family:var(--f-num);font-weight:800;font-size:20px}
 .seg button[aria-pressed="true"]{background:var(--gold);color:#1b140a}
-.seg.sprachen button{font-family:var(--f-ui);font-weight:600;font-size:15px;padding:9px 14px}
+.seg.sprachen button,.seg.worte button{font-family:var(--f-ui);font-weight:600;font-size:15px;padding:9px 14px}
 .namen{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 8px;align-items:center}
 .namen input{width:100%;min-width:0;padding:8px 10px;border-radius:9px;border:1px solid var(--line);background:#16120e;color:var(--ink);font:inherit;font-size:16px;-webkit-user-select:text;user-select:text}
 .farbe{width:30px;height:30px;border-radius:8px;border:2px solid rgba(255,255,255,.25)}
@@ -113,6 +113,35 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 #ergebnis{min-height:46px;display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:12px;background:#16120e;font-size:15px}
 #ergebnis b{font-family:var(--f-num);font-weight:800;font-size:30px;color:var(--gold)}
 .klein{font-size:12px;color:var(--ink-dim);line-height:1.4}
+/* Marken, Zuguhr, Verlauf */
+.marken{display:inline-flex;gap:4px;flex:none}
+.kopf .tagnacht{pointer-events:auto;cursor:pointer;text-transform:inherit;letter-spacing:inherit}
+.marke.nacht{background:rgba(28,38,70,.75);color:#c9d4ee}
+.kopf .name{min-width:2.5em}
+.kopf.steinmitte .name{max-width:calc(50% - 40px)}
+.kopf.steinmitte .marken{margin-left:auto}
+.kopf.steinmitte .uhr{margin-left:0}
+.kopf.eng .wort{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.kopf .uhr{margin-left:auto;flex:none;font-family:var(--f-num);font-size:17px;font-weight:600;letter-spacing:.02em;font-variant-numeric:tabular-nums;color:var(--ink-dim)}
+.feld.dran{box-shadow:inset 0 0 0 3px var(--gold)}
+.feld.dran .uhr{color:var(--gold)}
+.chip.zug{background:var(--gold);color:#1b140a}
+.uhrteil{display:flex;flex-direction:column;gap:8px}
+.aktionen button:disabled{opacity:.45;cursor:default}
+.grafikrahmen{position:relative}
+.grafik{display:block;width:100%;height:120px;border-radius:12px;background:#16120e}
+.gw{position:absolute;left:8px;font-family:var(--f-num);font-size:13px;font-weight:600;color:var(--ink-dim);font-variant-numeric:tabular-nums;pointer-events:none}
+.gw.oben{top:3px}
+.gw.unten{bottom:3px}
+.protokoll{list-style:none;margin:0;padding:0;max-height:260px;overflow:auto;border-radius:12px;background:#16120e}
+.protokoll li{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;padding:7px 12px;border-bottom:1px solid var(--line);font-size:14px}
+.protokoll li:last-child{border-bottom:0}
+.protokoll .lz{font-size:12px;color:var(--ink-dim);font-variant-numeric:tabular-nums;min-width:3.2em}
+.protokoll .ln{font-weight:600}
+.protokoll .lw{margin-left:auto;font-family:var(--f-num);font-weight:600;font-size:17px;font-variant-numeric:tabular-nums}
+.protokoll .ab{color:#f3b2a8}
+.protokoll .auf{color:var(--ok)}
+.protokoll li.trenner{color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:rgba(217,164,65,.07)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -136,7 +165,14 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
     <div class="gruppe">
       <div class="schalter"><span data-t="cmdLeben">Commander-Schaden zieht Leben ab</span><button type="button" id="cmdleben" aria-label="Commander-Schaden zieht Leben ab" data-t-aria="cmdLeben"></button></div>
       <div class="schalter"><span data-t="wach">Bildschirm anlassen</span><button type="button" id="wach" aria-label="Bildschirm anlassen" data-t-aria="wach"></button></div>
+      <div class="schalter"><span data-t="uhr">Zuguhr mit Spielzeit je Spieler</span><button type="button" id="uhr" aria-label="Zuguhr mit Spielzeit je Spieler" data-t-aria="uhr"></button></div>
+      <div class="uhrteil" id="uhrteil" hidden>
+        <p class="klein" id="uhrstatus"></p>
+        <div class="aktionen"><button type="button" id="uhrpause"></button><button type="button" id="uhrneu" data-t="uhrNeu">Uhr zurücksetzen</button></div>
+        <p class="klein" data-t="uhrRegel"></p>
+      </div>
     </div>
+    <div class="gruppe"><span class="t" data-t="tagnacht">Tag und Nacht</span><div class="seg worte" id="tagnacht"></div><p class="klein" data-t="tagHinweis"></p></div>
     <div class="gruppe"><span class="t" data-t="wuerfeln">Würfeln</span>
       <div class="aktionen">
         <button type="button" data-wurf="6" data-t="w6">W6 werfen</button>
@@ -153,6 +189,10 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
         <button type="button" id="neu" class="gefahr">Neues Spiel</button>
       </div>
     </div>
+    <div class="gruppe"><span class="t" data-t="verlauf">Verlauf</span>
+      <div class="grafikrahmen" id="grafikrahmen" hidden><svg class="grafik" id="grafik" viewBox="0 0 300 100" preserveAspectRatio="none" role="img" aria-label="Lebenspunkte im Spielverlauf" data-t-aria="grafik"></svg><span class="gw oben" id="gmax" aria-hidden="true"></span><span class="gw unten" id="gmin" aria-hidden="true"></span></div>
+      <ol class="protokoll" id="protokoll"></ol>
+    </div>
     <p class="klein" data-t="hilfe">Tippen links zieht einen Lebenspunkt ab, rechts gibt einen dazu. Gedrückt halten zählt weiter. Die Leiste unten im Feld öffnet Commander-Schaden, Gift, Steuer und mehr. Der Spielstand bleibt nur auf diesem Gerät.</p>
   </div>
 </div>
@@ -164,6 +204,8 @@ var FARBEN=["#c8963a","#a23f35","#2f7f7b","#4d6aa0","#7b8a3e","#7f4b7d"];
 var KEY="tmb-lebenspunkte-v1";
 var KRONE='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 9l1-6 2.5 3L6 2l1.5 4L10 3l1 6z" fill="currentColor"/></svg>';
 var FACKEL='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1c1.5 1.6 2.4 3 1 4.6C6.6 4.8 6 4.6 5.6 5c-.8.8-.5 1.7.4 2H4c-1.2-1.6-.3-3.6 2-6zM4.5 8h3L7 11H5z" fill="currentColor"/></svg>';
+var STADT='<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.5 11V3.5h2V5H5V3.5h2V5h1.5V3.5h2V11H7.2V8.3H4.8V11z" fill="currentColor"/></svg>';
+var ZAEHLER=["gift","steuer","energie","erfahrung","sturm","schaetze"];
 /* Sprachen: Deutsch, Englisch, Spanisch, Franzoesisch. Wahl im Menue, sonst Geraetesprache, sonst Englisch; ?lang=de|en|es|fr in der Adresse setzt sie fest. */
 var SPRACHEN=[["de","Deutsch"],["en","English"],["es","Español"],["fr","Français"]];
 var TXT={
@@ -180,7 +222,14 @@ de:{spieler:function(n){return"Spieler "+n;},tisch:"Spieltisch",menueAuf:"Menü 
   startGilt:function(v){return"Startleben "+v+" gilt ab dem nächsten neuen Spiel.";},undoOk:"Letzte Änderung zurückgenommen.",undoLeer:"Nichts mehr zum Zurücknehmen.",
   neuOk:function(v){return"Neues Spiel mit "+v+" Leben.";},vollNein:"Vollbild ist hier nicht verfügbar.",
   wurf:function(w,n){return"W"+w+": <b>"+n+"</b>";},muenzeErg:function(x){return"Münze: <b>"+x+"</b>";},kopf:"Kopf",zahl:"Zahl",beginnt:function(n){return"Es beginnt <b>"+n+"</b>";},
-  wachNein:"Dieses Gerät erlaubt das Wachhalten nicht.",wachAbgelehnt:"Wachhalten wurde abgelehnt."},
+  wachNein:"Dieses Gerät erlaubt das Wachhalten nicht.",wachAbgelehnt:"Wachhalten wurde abgelehnt.",
+  sturm:"Sturm",schaetze:"Schätze",segen:"Segen der Stadt",segenKurz:"Segen",tagnacht:"Tag und Nacht",aus:"Aus",tag:"Tag",nacht:"Nacht",tagWechsel:"Zwischen Tag und Nacht wechseln",
+  tagHinweis:"Ein Tipp auf die Marke im Feld wechselt zwischen Tag und Nacht.",logTag:"Es wird Tag",logNacht:"Es wird Nacht",logTagAus:"Tag und Nacht beendet",
+  uhr:"Zuguhr mit Spielzeit je Spieler",zugBeginnen:"Ich beginne",zugBeenden:"Zug beenden",pausiert:"Pause",uhrPause:"Uhr anhalten",uhrWeiter:"Uhr weiterlaufen lassen",uhrNeu:"Uhr zurücksetzen",
+  uhrHinweis:"Wer beginnt, tippt im eigenen Feld auf „Ich beginne“. „Startspieler losen“ startet die Uhr auch.",
+  uhrRegel:"Jeder beendet seinen Zug im eigenen Feld, dann ist der Nächste im Uhrzeigersinn dran. Sturm geht beim Zugwechsel auf 0.",
+  uhrStatus:function(z,n,d){return"Zug "+z+" · "+n+" ist dran · "+d;},zug:function(n){return"Zug "+n;},
+  verlauf:"Verlauf",verlaufLeer:"Noch keine Änderungen in diesem Spiel.",grafik:"Lebenspunkte im Spielverlauf",cmdVon:function(n){return"Commander-Schaden von "+n;}},
 en:{spieler:function(n){return"Player "+n;},tisch:"Game table",menueAuf:"Open menu",zumTisch:"Back to table",sprache:"Language",anzahl:"Players",start:"Starting life",namen:"Names and colors",
   cmdLeben:"Commander damage reduces life",wach:"Keep screen on",wuerfeln:"Dice",w6:"Roll D6",w20:"Roll D20",muenze:"Flip a coin",startspieler:"Pick first player",
   ergebnisLeer:"The result appears here.",spiel:"Game",undo:"Undo last change",voll:"Full screen",neu:"New game",neuSicher:"Sure? Tap again",
@@ -194,7 +243,14 @@ en:{spieler:function(n){return"Player "+n;},tisch:"Game table",menueAuf:"Open me
   startGilt:function(v){return"Starting life "+v+" applies from the next new game.";},undoOk:"Last change undone.",undoLeer:"Nothing left to undo.",
   neuOk:function(v){return"New game with "+v+" life.";},vollNein:"Full screen isn't available here.",
   wurf:function(w,n){return"D"+w+": <b>"+n+"</b>";},muenzeErg:function(x){return"Coin: <b>"+x+"</b>";},kopf:"Heads",zahl:"Tails",beginnt:function(n){return"<b>"+n+"</b> goes first";},
-  wachNein:"This device can't keep the screen on.",wachAbgelehnt:"Keeping the screen on was refused."},
+  wachNein:"This device can't keep the screen on.",wachAbgelehnt:"Keeping the screen on was refused.",
+  sturm:"Storm",schaetze:"Treasures",segen:"City's blessing",segenKurz:"Blessing",tagnacht:"Day and night",aus:"Off",tag:"Day",nacht:"Night",tagWechsel:"Switch between day and night",
+  tagHinweis:"Tap the badge in a field to switch between day and night.",logTag:"It becomes day",logNacht:"It becomes night",logTagAus:"Day and night ended",
+  uhr:"Turn clock with time per player",zugBeginnen:"I go first",zugBeenden:"End turn",pausiert:"Paused",uhrPause:"Pause clock",uhrWeiter:"Resume clock",uhrNeu:"Reset clock",
+  uhrHinweis:"Whoever goes first taps “I go first” in their own field. “Pick first player” also starts the clock.",
+  uhrRegel:"Everyone ends their turn in their own field, then play passes clockwise. Storm resets to 0 when the turn passes.",
+  uhrStatus:function(z,n,d){return"Turn "+z+" · "+n+" to play · "+d;},zug:function(n){return"Turn "+n;},
+  verlauf:"History",verlaufLeer:"No changes in this game yet.",grafik:"Life over the game",cmdVon:function(n){return"Commander damage from "+n;}},
 es:{spieler:function(n){return"Jugador "+n;},tisch:"Mesa de juego",menueAuf:"Abrir menú",zumTisch:"Volver a la mesa",sprache:"Idioma",anzahl:"Jugadores",start:"Vidas iniciales",namen:"Nombres y colores",
   cmdLeben:"El daño de comandante resta vidas",wach:"Mantener la pantalla encendida",wuerfeln:"Dados",w6:"Tirar D6",w20:"Tirar D20",muenze:"Lanzar moneda",startspieler:"Sortear quién empieza",
   ergebnisLeer:"El resultado aparece aquí.",spiel:"Partida",undo:"Deshacer último cambio",voll:"Pantalla completa",neu:"Nueva partida",neuSicher:"¿Seguro? Toca otra vez",
@@ -208,7 +264,14 @@ es:{spieler:function(n){return"Jugador "+n;},tisch:"Mesa de juego",menueAuf:"Abr
   startGilt:function(v){return"Las "+v+" vidas iniciales se aplican desde la próxima partida.";},undoOk:"Último cambio deshecho.",undoLeer:"No queda nada por deshacer.",
   neuOk:function(v){return"Nueva partida con "+v+" vidas.";},vollNein:"La pantalla completa no está disponible aquí.",
   wurf:function(w,n){return"D"+w+": <b>"+n+"</b>";},muenzeErg:function(x){return"Moneda: <b>"+x+"</b>";},kopf:"Cara",zahl:"Cruz",beginnt:function(n){return"Empieza <b>"+n+"</b>";},
-  wachNein:"Este dispositivo no puede mantener la pantalla encendida.",wachAbgelehnt:"No se permitió mantener la pantalla encendida."},
+  wachNein:"Este dispositivo no puede mantener la pantalla encendida.",wachAbgelehnt:"No se permitió mantener la pantalla encendida.",
+  sturm:"Tormenta",schaetze:"Tesoros",segen:"Bendición de la ciudad",segenKurz:"Bendición",tagnacht:"Día y noche",aus:"Desactivado",tag:"Día",nacht:"Noche",tagWechsel:"Cambiar entre día y noche",
+  tagHinweis:"Toca la etiqueta de una zona para cambiar entre día y noche.",logTag:"Se hace de día",logNacht:"Se hace de noche",logTagAus:"Día y noche desactivados",
+  uhr:"Reloj de turnos con tiempo por jugador",zugBeginnen:"Empiezo yo",zugBeenden:"Terminar turno",pausiert:"En pausa",uhrPause:"Pausar reloj",uhrWeiter:"Reanudar reloj",uhrNeu:"Reiniciar reloj",
+  uhrHinweis:"Quien empiece toca «Empiezo yo» en su propia zona. «Sortear quién empieza» también pone en marcha el reloj.",
+  uhrRegel:"Cada uno termina su turno en su propia zona y luego le toca al siguiente en el sentido de las agujas del reloj. La tormenta vuelve a 0 al pasar el turno.",
+  uhrStatus:function(z,n,d){return"Turno "+z+" · le toca a "+n+" · "+d;},zug:function(n){return"Turno "+n;},
+  verlauf:"Historial",verlaufLeer:"Todavía no hay cambios en esta partida.",grafik:"Vidas a lo largo de la partida",cmdVon:function(n){return"Daño de comandante de "+n;}},
 fr:{spieler:function(n){return"Joueur "+n;},tisch:"Table de jeu",menueAuf:"Ouvrir le menu",zumTisch:"Retour à la table",sprache:"Langue",anzahl:"Joueurs",start:"Points de vie de départ",namen:"Noms et couleurs",
   cmdLeben:"Les blessures de commandant retirent des points de vie",wach:"Garder l'écran allumé",wuerfeln:"Dés",w6:"Lancer un D6",w20:"Lancer un D20",muenze:"Lancer une pièce",startspieler:"Tirer le premier joueur",
   ergebnisLeer:"Le résultat s'affiche ici.",spiel:"Partie",undo:"Annuler la dernière modification",voll:"Plein écran",neu:"Nouvelle partie",neuSicher:"Sûr ? Touchez encore",
@@ -222,7 +285,14 @@ fr:{spieler:function(n){return"Joueur "+n;},tisch:"Table de jeu",menueAuf:"Ouvri
   startGilt:function(v){return"Les "+v+" points de vie de départ s'appliquent à la prochaine partie.";},undoOk:"Dernière modification annulée.",undoLeer:"Plus rien à annuler.",
   neuOk:function(v){return"Nouvelle partie à "+v+" points de vie.";},vollNein:"Le plein écran n'est pas disponible ici.",
   wurf:function(w,n){return"D"+w+" : <b>"+n+"</b>";},muenzeErg:function(x){return"Pièce : <b>"+x+"</b>";},kopf:"Face",zahl:"Pile",beginnt:function(n){return"<b>"+n+"</b> commence";},
-  wachNein:"Cet appareil ne peut pas garder l'écran allumé.",wachAbgelehnt:"Le maintien de l'écran allumé a été refusé."}
+  wachNein:"Cet appareil ne peut pas garder l'écran allumé.",wachAbgelehnt:"Le maintien de l'écran allumé a été refusé.",
+  sturm:"Déluge",schaetze:"Trésors",segen:"Bénédiction de la cité",segenKurz:"Bénédiction",tagnacht:"Jour et nuit",aus:"Désactivé",tag:"Jour",nacht:"Nuit",tagWechsel:"Basculer entre le jour et la nuit",
+  tagHinweis:"Touchez le badge d'une zone pour basculer entre le jour et la nuit.",logTag:"Il fait jour",logNacht:"Il fait nuit",logTagAus:"Jour et nuit terminés",
+  uhr:"Horloge de tours avec temps par joueur",zugBeginnen:"Je commence",zugBeenden:"Fin du tour",pausiert:"En pause",uhrPause:"Mettre l'horloge en pause",uhrWeiter:"Relancer l'horloge",uhrNeu:"Réinitialiser l'horloge",
+  uhrHinweis:"Le premier joueur touche «\u00a0Je commence\u00a0» dans sa propre zone. «\u00a0Tirer le premier joueur\u00a0» lance aussi l'horloge.",
+  uhrRegel:"Chacun termine son tour dans sa propre zone, puis c'est au suivant dans le sens des aiguilles d'une montre. Le déluge revient à 0 à chaque changement de tour.",
+  uhrStatus:function(z,n,d){return"Tour "+z+" · au tour de "+n+" · "+d;},zug:function(n){return"Tour "+n;},
+  verlauf:"Historique",verlaufLeer:"Aucun changement dans cette partie pour l'instant.",grafik:"Points de vie au fil de la partie",cmdVon:function(n){return"Blessures de commandant de "+n;}}
 };
 function spracheErmitteln(){
   var c="";
@@ -242,15 +312,25 @@ function texteSetzen(){
 }
 
 function spieler(i,leben){return {id:"p"+i+"-"+Math.random().toString(36).slice(2,7),name:t("spieler",i+1),farbe:FARBEN[i],leben:leben,gift:0,energie:0,erfahrung:0,steuer:0,partner:false,cmd:{}};}
-function neuerZustand(n,leben){var s={n:n,start:leben,cmdLeben:true,monarch:null,initiative:null,spieler:[]};for(var i=0;i<6;i++)s.spieler.push(spieler(i,leben));return s;}
+function neuerZustand(n,leben){var s={n:n,start:leben,anfang:leben,cmdLeben:true,monarch:null,initiative:null,spieler:[]};for(var i=0;i<6;i++)s.spieler.push(spieler(i,leben));return normalisieren(s);}
+/* Aeltere gespeicherte Spielstaende bekommen die neuen Felder (Sturm, Schaetze, Segen, Tag/Nacht, Zuguhr, Verlauf) */
+function normalisieren(s){
+  s.spieler.forEach(function(p){ZAEHLER.forEach(function(k){p[k]=p[k]||0;});p.segen=!!p.segen;p.cmd=p.cmd||{};});
+  if(s.tag!=="tag"&&s.tag!=="nacht")s.tag=null;
+  if(!Array.isArray(s.log))s.log=[];
+  if(!s.anfang)s.anfang=s.start;
+  if(!s.uhr||typeof s.uhr!=="object")s.uhr={an:false,aktiv:null,start:0,pause:0,zug:0,zeit:{}};
+  if(!s.uhr.zeit)s.uhr.zeit={};
+  return s;
+}
 
 function laden(){
-  try{var t=localStorage.getItem(KEY);if(t){var s=JSON.parse(t);if(s&&s.spieler&&s.spieler.length===6)return s;}}catch(e){}
+  try{var z=localStorage.getItem(KEY);if(z){var s=JSON.parse(z);if(s&&s.spieler&&s.spieler.length===6)return s;}}catch(e){}
   var n=4,l=40;
   try{var q=new URLSearchParams(location.search);var qn=parseInt(q.get("spieler"),10),ql=parseInt(q.get("leben"),10);if(qn>=2&&qn<=6)n=qn;if(ql>0&&ql<1000)l=ql;}catch(e){}
   return neuerZustand(n,l);
 }
-var S=laden();
+var S=normalisieren(laden());
 S.spieler.forEach(function(p,i){if(standardname(p.name,i))p.name=t("spieler",i+1);});
 var verlauf=[];var letzteAenderung=0;
 function speichern(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
@@ -286,6 +366,24 @@ function groesse(f){
   innen.style.width=iw+"px";innen.style.height=ih+"px";
   innen.style.transform="translate(-50%,-50%) rotate("+rot+"deg)";
   var z=innen.querySelector(".leben");if(z){var gr=Math.min(ih*0.55,iw*0.42);z.style.fontSize=Math.max(40,gr)+"px";}
+  steinPlatz(f);engPruefen(f);
+}
+/* Die Kopfzeile laesst an dem Ende Platz, das unter dem goldenen Stein in der Tischmitte liegt */
+function steinPlatz(f){
+  var k=f.querySelector(".kopf"),st=document.getElementById("stein");if(!k||!st)return;
+  k.style.paddingLeft=k.style.paddingRight="";k.classList.remove("steinmitte");
+  var s=st.getBoundingClientRect(),r=k.getBoundingClientRect(),rot=+f.dataset.rot,quer=(rot===90||rot===270);
+  if(r.right<s.left-6||r.left>s.right+6||r.bottom<s.top-6||r.top>s.bottom+6)return;
+  var a=quer?r.top:r.left,b=quer?r.bottom:r.right,lo=(quer?s.top:s.left)-6,hi=(quer?s.bottom:s.right)+6;
+  var niedrig=lo<=a?hi-a:0,hoch=hi>=b?b-lo:0;if(!niedrig&&!hoch){k.classList.add("steinmitte");return;}/* Stein mitten auf der Zeile: Name davor, Marken und Uhr dahinter */
+  var vorn=(rot===0||rot===90);/* bei 0 und 90 Grad liegt der Zeilenanfang am niedrigen Ende */
+  if(niedrig>0)k.style[vorn?"paddingLeft":"paddingRight"]=Math.ceil(niedrig)+"px";
+  if(hoch>0)k.style[vorn?"paddingRight":"paddingLeft"]=Math.ceil(hoch)+"px";
+}
+/* Passt der Name nicht mehr neben die Marken, zeigen die Marken nur ihr Symbol */
+function engPruefen(f){
+  var k=f.querySelector(".kopf"),n=f.querySelector(".name");if(!k||!n)return;
+  k.classList.remove("eng");if(n.scrollWidth>n.clientWidth+1)k.classList.add("eng");
 }
 
 function aufbauen(){
@@ -295,7 +393,7 @@ function aufbauen(){
     var s=L.s[i];var f=document.createElement("section");f.className="feld";f.dataset.rot=s[3];f.dataset.i=i;
     f.style.gridRow=s[0];f.style.gridColumn=s[1]+" / span "+s[2];
     f.setAttribute("aria-label",p.name);
-    f.innerHTML='<div class="innen"><div class="kopf"><span class="name"></span><span class="marken"></span></div>'+
+    f.innerHTML='<div class="innen"><div class="kopf"><span class="name"></span><span class="marken"></span><span class="uhr" hidden></span></div>'+
       '<div class="mitte"><button class="tap minus" type="button" aria-label="'+t("minusLeben")+'">−</button><span class="delta"></span><span class="leben"></span><button class="tap plus" type="button" aria-label="'+t("plusLeben")+'">+</button></div>'+
       '<div class="fuss"></div><div class="raus" hidden><strong>'+t("ausgeschieden")+'</strong><span></span></div></div>';
     tisch.appendChild(f);felder.push(f);
@@ -310,27 +408,32 @@ function zeichnen(){
     var f=felder[i];if(!f)return;
     f.style.background="linear-gradient(160deg,"+mischen(p.farbe,.62)+","+mischen(p.farbe,.38)+")";
     f.querySelector(".name").textContent=p.name;
-    var m="";if(S.monarch===p.id)m+='<span class="marke">'+KRONE+t("monarch")+'</span>';if(S.initiative===p.id)m+='<span class="marke">'+FACKEL+t("initiative")+'</span>';
+    var m="";if(S.monarch===p.id)m+='<span class="marke">'+KRONE+'<span class="wort">'+t("monarch")+'</span></span>';if(S.initiative===p.id)m+='<span class="marke">'+FACKEL+'<span class="wort">'+t("initiative")+'</span></span>';
+    if(p.segen)m+='<span class="marke">'+STADT+'<span class="wort">'+t("segenKurz")+'</span></span>';
+    if(S.tag)m+='<button type="button" class="marke tagnacht '+S.tag+'" data-tag="1" aria-label="'+t(S.tag)+' – '+t("tagWechsel")+'">'+t(S.tag)+'</button>';
     f.querySelector(".marken").innerHTML=m;
+    f.classList.toggle("dran",dranId()===p.id);f.querySelector(".uhr").hidden=!S.uhr.an;
     f.querySelector(".leben").textContent=p.leben;
     var cmdMax=0;for(var k in p.cmd)cmdMax=Math.max(cmdMax,p.cmd[k]);
     var fuss=f.querySelector(".fuss");
-    fuss.innerHTML='<button type="button" class="chip'+(cmdMax>=21?' warn':'')+'" data-blatt="'+i+'">'+t("commander")+'<b>'+cmdMax+'</b></button>'+
+    fuss.innerHTML=zugChip(p,i)+'<button type="button" class="chip'+(cmdMax>=21?' warn':'')+'" data-blatt="'+i+'">'+t("commander")+'<b>'+cmdMax+'</b></button>'+
       (p.gift?'<button type="button" class="chip'+(p.gift>=10?' warn':'')+'" data-blatt="'+i+'">'+t("gift")+'<b>'+p.gift+'</b></button>':'')+
       (p.steuer?'<button type="button" class="chip" data-blatt="'+i+'">'+t("steuer")+'<b>+'+(2*p.steuer)+'</b></button>':'')+
       (p.energie?'<button type="button" class="chip" data-blatt="'+i+'">'+t("energie")+'<b>'+p.energie+'</b></button>':'')+
       (p.erfahrung?'<button type="button" class="chip" data-blatt="'+i+'">'+t("erfahrung")+'<b>'+p.erfahrung+'</b></button>':'')+
+      (p.sturm?'<button type="button" class="chip" data-blatt="'+i+'">'+t("sturm")+'<b>'+p.sturm+'</b></button>':'')+
+      (p.schaetze?'<button type="button" class="chip" data-blatt="'+i+'">'+t("schaetze")+'<b>'+p.schaetze+'</b></button>':'')+
       '<button type="button" class="chip" data-blatt="'+i+'">'+t("mehr")+'</button>';
     var d=deltas[p.id],de=f.querySelector(".delta");
     if(d&&d.wert){de.textContent=(d.wert>0?"+":"−")+Math.abs(d.wert);de.classList.add("an");}else{de.classList.remove("an");}
     var grund=raus(p),r=f.querySelector(".raus");r.hidden=!grund;r.querySelector("span").textContent=grund;
     if(offenesBlatt===i)blattFuellen(i);
   });
-  speichern();
+  speichern();uhrTick();felder.forEach(engPruefen);
 }
 
 function leben(i,d){
-  var p=S.spieler[i];merken(true);p.leben+=d;
+  var p=S.spieler[i];merken(true);p.leben+=d;protokoll({p:p.id,a:"leben",d:d,w:p.leben});
   var dd=deltas[p.id]||(deltas[p.id]={wert:0,t:0});dd.wert+=d;clearTimeout(dd.t);
   dd.t=setTimeout(function(){dd.wert=0;zeichnen();},1800);
   zeichnen();
@@ -347,6 +450,8 @@ function halten(btn,i,d){
 
 /* Detailblatt */
 tisch.addEventListener("click",function(e){
+  var z=e.target.closest("[data-zug]");if(z){zugAktion(z.dataset.zug,+z.dataset.i);return;}
+  var tg=e.target.closest("[data-tag]");if(tg){tagSetzen(S.tag==="tag"?"nacht":"tag");return;}
   var c=e.target.closest("[data-blatt]");if(c){blattOeffnen(+c.dataset.blatt);return;}
   var a=e.target.closest("[data-akt]");if(a){blattAktion(a);}
 });
@@ -375,17 +480,22 @@ function blattFuellen(i){
   h+=zeile(t("gewirkt",2*p.steuer),null,"steuer",p.steuer,false,i);
   h+=zeile(t("energie"),null,"energie",p.energie,false,i);
   h+=zeile(t("erfahrung"),null,"erfahrung",p.erfahrung,false,i);
+  h+=zeile(t("sturm"),null,"sturm",p.sturm,false,i);
+  h+=zeile(t("schaetze"),null,"schaetze",p.schaetze,false,i);
   h+='<div class="reihe">'+
      '<button type="button" class="pille" data-akt="monarch" data-i="'+i+'" aria-pressed="'+(S.monarch===p.id)+'">'+t("monarch")+'</button>'+
      '<button type="button" class="pille" data-akt="initiative" data-i="'+i+'" aria-pressed="'+(S.initiative===p.id)+'">'+t("initiative")+'</button>'+
+     '<button type="button" class="pille" data-akt="segen" data-i="'+i+'" aria-pressed="'+p.segen+'">'+t("segen")+'</button>'+
      '<button type="button" class="pille" data-akt="partner" data-i="'+i+'" aria-pressed="'+p.partner+'">'+t("partner")+'</button></div>';
   b.innerHTML=h;
 }
 function blattAktion(a){
   var akt=a.dataset.akt;if(akt==="zu"){blattSchliessen();return;}
   var i=+a.dataset.i,p=S.spieler[i],d=+a.dataset.d||0;merken(false);
-  if(akt==="cmd"){var k=a.dataset.k,alt=p.cmd[k]||0,neu=Math.max(0,alt+d);p.cmd[k]=neu;if(S.cmdLeben)p.leben-=(neu-alt);}
-  else if(akt==="gift"||akt==="steuer"||akt==="energie"||akt==="erfahrung"){p[akt]=Math.max(0,p[akt]+d);}
+  if(akt==="cmd"){var k=a.dataset.k,alt=p.cmd[k]||0,neu=Math.max(0,alt+d);p.cmd[k]=neu;if(S.cmdLeben)p.leben-=(neu-alt);
+    if(neu!==alt)protokoll({p:p.id,a:"cmd",q:k,d:neu-alt,w:neu,L:S.cmdLeben?p.leben:undefined});}
+  else if(ZAEHLER.indexOf(akt)>=0){var vor=p[akt]||0;p[akt]=Math.max(0,vor+d);if(akt==="gift"&&p.gift!==vor)protokoll({p:p.id,a:"gift",d:p.gift-vor,w:p.gift});}
+  else if(akt==="segen"){p.segen=!p.segen;}
   else if(akt==="monarch"||akt==="initiative"){S[akt]=(S[akt]===p.id)?null:p.id;}
   else if(akt==="partner"){p.partner=!p.partner;if(!p.partner){S.spieler.forEach(function(o){delete o.cmd[p.id+":b"];});}}
   zeichnen();
@@ -415,6 +525,7 @@ function menueFuellen(){
   document.getElementById("cmdleben").setAttribute("aria-pressed",String(S.cmdLeben));
   document.getElementById("wach").setAttribute("aria-pressed",String(!!sperre));
   var neu=document.getElementById("neu");neu.classList.remove("sicher");neu.textContent=t("neu");
+  uhrMenue();tagMenue();protokollZeigen();
 }
 function spracheSetzen(c){
   if(!TXT[c])return;SPR=c;try{localStorage.setItem(KEY+"-sprache",c);}catch(e){}
@@ -422,10 +533,10 @@ function spracheSetzen(c){
   texteSetzen();aufbauen();menueFuellen();ergebnis('<span class="klein" data-t="ergebnisLeer">'+t("ergebnisLeer")+'</span>');
 }
 document.getElementById("cmdleben").addEventListener("click",function(){S.cmdLeben=!S.cmdLeben;speichern();menueFuellen();});
-document.getElementById("undo").addEventListener("click",function(){var t=verlauf.pop();if(t){S=JSON.parse(t);aufbauen();menueFuellen();ergebnis(t("undoOk"));}else{ergebnis(t("undoLeer"));}});
+document.getElementById("undo").addEventListener("click",function(){var z=verlauf.pop();if(z){S=normalisieren(JSON.parse(z));aufbauen();menueFuellen();ergebnis(t("undoOk"));}else{ergebnis(t("undoLeer"));}});
 document.getElementById("neu").addEventListener("click",function(){
   var b=this;if(!b.classList.contains("sicher")){b.classList.add("sicher");b.textContent=t("neuSicher");return;}
-  merken(false);var alt=S;S=neuerZustand(alt.n,alt.start);S.cmdLeben=alt.cmdLeben;
+  merken(false);var alt=S;S=neuerZustand(alt.n,alt.start);S.cmdLeben=alt.cmdLeben;S.uhr.an=!!alt.uhr.an;
   S.spieler.forEach(function(p,i){p.name=alt.spieler[i].name;p.farbe=alt.spieler[i].farbe;});
   deltas={};aufbauen();menueFuellen();ergebnis(t("neuOk",S.start));
 });
@@ -435,9 +546,108 @@ function zufall(n){if(window.crypto&&crypto.getRandomValues){var a=new Uint32Arr
 Array.prototype.forEach.call(document.querySelectorAll("[data-wurf]"),function(b){b.addEventListener("click",function(){
   var w=b.dataset.wurf;
   if(w==="2")ergebnis(t("muenzeErg",zufall(2)?t("kopf"):t("zahl")));
-  else if(w==="start"){var p=aktive()[zufall(S.n)];ergebnis('<span class="punkt" style="background:'+p.farbe+'"></span>'+t("beginnt",esc(p.name)));}
+  else if(w==="start"){var p=aktive()[zufall(S.n)];ergebnis('<span class="punkt" style="background:'+p.farbe+'"></span>'+t("beginnt",esc(p.name)));
+    if(S.uhr.an&&!dranId()){zugStart(p);uhrMenue();protokollZeigen();}}
   else ergebnis(t("wurf",w,1+zufall(+w)));
 });});
+
+/* Verlauf: Aenderungen an Leben, Commander-Schaden und Gift, dazu Zugwechsel und Tag/Nacht.
+   Schnelle Folgen beim selben Wert werden zu einem Eintrag zusammengefasst. */
+function protokoll(e){
+  var jetzt=Date.now(),L=S.log,z=L[L.length-1];
+  if(e.d!==undefined&&z&&z.p===e.p&&z.a===e.a&&z.q===e.q&&jetzt-z.t2<2500){
+    z.d+=e.d;z.w=e.w;if(e.L!==undefined)z.L=e.L;z.t2=jetzt;if(!z.d)L.pop();return;}
+  e.t=e.t2=jetzt;e.z=S.uhr.zug||0;L.push(e);if(L.length>250)L.shift();
+}
+function vz(d){return(d<0?"−":"+")+Math.abs(d);}
+function protokollZeigen(){
+  var ol=document.getElementById("protokoll"),N={},F={},Q={};
+  S.spieler.forEach(function(p){N[p.id]=p.name;F[p.id]=p.farbe;});
+  quellen().forEach(function(q){Q[q.key]=q.p.name+(q.teil?" "+q.teil:"");});
+  grafikZeigen();
+  if(!S.log.length){ol.innerHTML='<li class="klein">'+esc(t("verlaufLeer"))+'</li>';return;}
+  var h="";
+  for(var j=S.log.length-1;j>=0;j--){
+    var e=S.log[j],zeit='<span class="lz">'+new Date(e.t).toLocaleTimeString(SPR,{hour:"2-digit",minute:"2-digit"})+'</span>';
+    if(e.a==="zug"){h+='<li class="trenner">'+zeit+'<span>'+esc(t("zug",e.z)+" · "+(N[e.p]||""))+'</span></li>';continue;}
+    if(e.a==="tag"){h+='<li class="trenner">'+zeit+'<span>'+esc(t(e.w==="tag"?"logTag":e.w==="nacht"?"logNacht":"logTagAus"))+'</span></li>';continue;}
+    var schlecht=e.a==="leben"?e.d<0:e.d>0,was="",wert='<b class="'+(schlecht?"ab":"auf")+'">'+vz(e.d)+'</b> → '+e.w;
+    if(e.a==="cmd"){was=t("cmdVon",Q[e.q]||N[String(e.q).split(":")[0]]||"?");if(e.L!==undefined&&e.L!==null)wert+=" · "+esc(t("lp",e.L));}
+    else if(e.a==="gift")was=t("gift");
+    h+='<li>'+zeit+'<span class="punkt" style="background:'+(F[e.p]||"#777")+'"></span><span class="ln">'+esc(N[e.p]||"?")+'</span>'+
+       (was?'<span>'+esc(was)+'</span>':'')+'<span class="lw">'+wert+'</span></li>';
+  }
+  ol.innerHTML=h;
+}
+/* Lebenslinien aller Spieler, je Aenderung ein Schritt */
+function grafikZeigen(){
+  var g=document.getElementById("grafik"),ps=aktive(),a0=S.anfang||S.start,w={},serie={},k=0;
+  ps.forEach(function(p){w[p.id]=a0;serie[p.id]=[a0];});
+  S.log.forEach(function(e){if(!serie[e.p])return;var v=e.a==="leben"?e.w:(e.a==="cmd"&&e.L!==undefined&&e.L!==null?e.L:null);if(v===null)return;
+    k++;w[e.p]=v;ps.forEach(function(p){serie[p.id].push(w[p.id]);});});
+  var rahmen=document.getElementById("grafikrahmen");
+  if(!k){rahmen.hidden=true;g.innerHTML="";return;}
+  /* Massstab nach den echten Werten (mindestens 10 Punkte Spanne), links Platz fuer die Beschriftung */
+  var lo=Infinity,hi=-Infinity;ps.forEach(function(p){serie[p.id].forEach(function(v){if(v<lo)lo=v;if(v>hi)hi=v;});});
+  if(hi-lo<10){var m=(hi+lo)/2;hi=Math.ceil(m+5);lo=Math.floor(m-5);}
+  var sp=hi-lo,n=ps.length;function y(v,o){return(6+88*(hi-v)/sp+(o||0)).toFixed(1);}function x(j){return(26+274*j/(k+1)).toFixed(1);}
+  var h=(lo<0&&hi>0)?'<line x1="26" x2="300" y1="'+y(0)+'" y2="'+y(0)+'" stroke="#5a4e40" stroke-width="1" stroke-dasharray="4 4" vector-effect="non-scaling-stroke"/>':'';
+  ps.forEach(function(p,i){var s=serie[p.id],o=(i-(n-1)/2)*1.6,pt=[];
+    for(var j=0;j<s.length;j++){pt.push(x(j)+","+y(s[j],o));pt.push(x(j+1)+","+y(s[j],o));}
+    h+='<polyline points="'+pt.join(" ")+'" fill="none" stroke="'+p.farbe+'" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>';});
+  g.innerHTML=h;document.getElementById("gmax").textContent=hi;document.getElementById("gmin").textContent=lo;rahmen.hidden=false;
+}
+
+/* Zuguhr: Spielzeit je Spieler wie bei einer Schachuhr. Der Zug geht im Uhrzeigersinn weiter,
+   im Tisch-Layout ist das die vorige Feldnummer; ausgeschiedene Spieler werden uebersprungen. */
+function dauer(ms){var s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor(s/60)%60,x=s%60;return(h?h+":"+(m<10?"0":""):"")+m+":"+(x<10?"0":"")+x;}
+function dranId(){var u=S.uhr;if(!u.an||!u.aktiv)return null;return aktive().some(function(p){return p.id===u.aktiv;})?u.aktiv:null;}
+function laufzeit(){var u=S.uhr;return dranId()?(u.pause||Date.now())-u.start:0;}
+function gesamt(p){return(S.uhr.zeit[p.id]||0)+(dranId()===p.id?laufzeit():0);}
+function spielerVon(id){return S.spieler.filter(function(p){return p.id===id;})[0];}
+function zugChip(p,i){
+  if(!S.uhr.an)return"";var d=dranId();
+  if(!d)return raus(p)?"":'<button type="button" class="chip zug" data-zug="start" data-i="'+i+'">'+t("zugBeginnen")+'</button>';
+  if(d===p.id)return'<button type="button" class="chip zug" data-zug="ende" data-i="'+i+'">'+t("zugBeenden")+'<b class="zugzeit"></b></button>';
+  return"";
+}
+function uhrTick(){
+  if(!S.uhr.an)return;var lz=laufzeit();
+  aktive().forEach(function(p,i){var f=felder[i];if(!f)return;var u=f.querySelector(".uhr");if(u)u.textContent=dauer(gesamt(p));
+    var z=f.querySelector(".zugzeit");if(z)z.textContent=S.uhr.pause?t("pausiert"):dauer(lz);});
+  if(!menue.hidden)uhrStatus();
+}
+function zugStart(p){merken(false);var u=S.uhr;u.aktiv=p.id;u.start=Date.now();u.pause=0;u.zug=1;u.zeit={};protokoll({a:"zug",p:p.id});zeichnen();}
+function zugWeiter(){
+  var u=S.uhr,d=dranId();if(!d)return;merken(false);var jetzt=Date.now();
+  u.zeit[d]=(u.zeit[d]||0)+((u.pause||jetzt)-u.start);
+  var ps=aktive(),n=ps.length,i=0,j;for(j=0;j<n;j++)if(ps[j].id===d)i=j;
+  var nx=ps[i];for(j=1;j<n;j++){var c=ps[(i-j+n)%n];if(!raus(c)){nx=c;break;}}
+  u.aktiv=nx.id;u.start=jetzt;u.pause=0;u.zug++;
+  S.spieler.forEach(function(p){p.sturm=0;});
+  protokoll({a:"zug",p:nx.id});zeichnen();
+}
+function zugAktion(art,i){if(art==="start"){if(!dranId())zugStart(S.spieler[i]);}else zugWeiter();}
+function uhrStatus(){var el=document.getElementById("uhrstatus"),d=dranId();
+  el.textContent=d?t("uhrStatus",S.uhr.zug,spielerVon(d).name,S.uhr.pause?t("pausiert"):dauer(laufzeit())):t("uhrHinweis");}
+function uhrMenue(){
+  var u=S.uhr;document.getElementById("uhr").setAttribute("aria-pressed",String(!!u.an));
+  document.getElementById("uhrteil").hidden=!u.an;
+  var pb=document.getElementById("uhrpause");pb.textContent=t(u.pause?"uhrWeiter":"uhrPause");pb.disabled=!dranId();
+  uhrStatus();
+}
+function uhrLeeren(){var u=S.uhr;u.aktiv=null;u.zug=0;u.zeit={};u.pause=0;u.start=0;}
+document.getElementById("uhr").addEventListener("click",function(){merken(false);S.uhr.an=!S.uhr.an;if(!S.uhr.an)uhrLeeren();zeichnen();uhrMenue();});
+document.getElementById("uhrpause").addEventListener("click",function(){if(!dranId())return;merken(false);var u=S.uhr,j=Date.now();if(u.pause){u.start+=j-u.pause;u.pause=0;}else u.pause=j;zeichnen();uhrMenue();});
+document.getElementById("uhrneu").addEventListener("click",function(){merken(false);uhrLeeren();zeichnen();uhrMenue();});
+
+/* Tag und Nacht: im Menue ein- und ausschalten, auf dem Tisch per Tipp auf die Marke wechseln */
+function tagSetzen(v){merken(false);S.tag=v;protokoll({a:"tag",w:v});zeichnen();if(!menue.hidden){tagMenue();protokollZeigen();}}
+function tagMenue(){
+  var el=document.getElementById("tagnacht");el.innerHTML="";
+  [[null,"aus"],["tag","tag"],["nacht","nacht"]].forEach(function(o){var b=document.createElement("button");b.type="button";b.textContent=t(o[1]);
+    b.setAttribute("aria-pressed",String(S.tag===o[0]));b.addEventListener("click",function(){if(S.tag!==o[0])tagSetzen(o[0]);});el.appendChild(b);});
+}
 
 /* Bildschirm wach halten */
 var sperre=null;
@@ -448,6 +658,7 @@ document.addEventListener("visibilitychange",function(){var w=false;try{w=localS
 tisch.addEventListener("pointerdown",function once(){var w=false;try{w=localStorage.getItem(KEY+"-wach")==="1";}catch(e){}if(w&&!sperre)wachAn();},{once:true});
 
 window.addEventListener("resize",function(){felder.forEach(groesse);});
+setInterval(uhrTick,1000);
 texteSetzen();
 aufbauen();
 if("serviceWorker" in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{navigator.serviceWorker.register("sw.js").catch(function(){});}catch(e){}}
