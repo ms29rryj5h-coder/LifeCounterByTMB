@@ -13,9 +13,13 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
 <title>LifeCounterByTMB</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap">
+<link rel="preload" href="fonts/big-shoulders-display.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+/* Schriften liegen bei der App (SIL Open Font License, siehe fonts/LIZENZ.txt); es wird nichts von Google geladen */
+@font-face{font-family:"Big Shoulders Display";font-style:normal;font-weight:100 900;font-display:swap;src:url(fonts/big-shoulders-display.woff2) format("woff2")}
+@font-face{font-family:"Barlow Semi Condensed";font-style:normal;font-weight:400;font-display:swap;src:url(fonts/barlow-semi-condensed-400.woff2) format("woff2")}
+@font-face{font-family:"Barlow Semi Condensed";font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-semi-condensed-600.woff2) format("woff2")}
+</style>
 <style>
 /* Tischansicht: Handy liegt in der Mitte, jedes Spielerfeld zeigt zu seinem Platz; Menue aus dem goldenen Stein in der Mitte. */
 :root{
@@ -86,12 +90,12 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 #stein svg{width:30px;height:20px}
 
 /* Menue */
-#menue,#ende{position:fixed;inset:0;z-index:20;background:rgba(8,6,5,.72);display:flex;justify-content:center;align-items:flex-end}
-#menue .karte,#ende .karte{width:min(100%,560px);max-height:92%;overflow:auto;background:var(--sheet);border-radius:18px 18px 0 0;
+#menue,#ende,#intro{position:fixed;inset:0;z-index:20;background:rgba(8,6,5,.72);display:flex;justify-content:center;align-items:flex-end}
+#menue .karte,#ende .karte,#intro .karte{width:min(100%,560px);max-height:92%;overflow:auto;background:var(--sheet);border-radius:18px 18px 0 0;
   padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:16px}
-#menue header,#ende header{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
-#menue h2,#ende h2{margin:0;font-family:var(--f-num);font-weight:800;font-size:28px;letter-spacing:.02em;text-wrap:balance}
-#menue h2 small,#ende h2 small{display:block;font-family:var(--f-ui);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+#menue header,#ende header,#intro header{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+#menue h2,#ende h2,#intro h2{margin:0;font-family:var(--f-num);font-weight:800;font-size:28px;letter-spacing:.02em;text-wrap:balance}
+#menue h2 small,#ende h2 small,#intro h2 small{display:block;font-family:var(--f-ui);font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
 .gruppe{display:flex;flex-direction:column;gap:8px}
 .gruppe > label,.gruppe > .t{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim)}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
@@ -144,6 +148,28 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-o
 .protokoll li.trenner{color:var(--gold);font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;background:rgba(217,164,65,.07)}
 /* Stammspieler, Spielende, Statistik */
 #ende{z-index:21}
+#intro{z-index:22}
+.schritte{margin:0;padding-left:24px;display:flex;flex-direction:column;gap:10px;font-size:16px;line-height:1.4}
+.schritte li::marker{color:var(--gold);font-family:var(--f-num);font-weight:800}
+#intro .fertig{padding:12px 16px;font-size:16px}
+.homebox{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:12px;background:rgba(217,164,65,.1);border:1px solid rgba(217,164,65,.35)}
+.homekopf{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.homebox strong{font-size:15px;color:var(--gold)}
+#homeweg{font-size:24px;line-height:1;padding:0 4px}
+.homebox .fertig{align-self:flex-start}
+.pille.gefahrpille{background:rgba(224,96,79,.18);color:#f3b2a8}
+.pille.gefahrpille[aria-pressed="true"]{background:var(--danger);color:#1b0f0c}
+.pad{gap:6px}
+.blatt .oben h3{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.padkopf{display:flex;align-items:center;gap:10px;min-width:0}
+.oben.steinmitte > h3,.oben.steinmitte .padkopf{max-width:calc(50% - 40px)}
+.padwert{min-width:1.6em;text-align:left;font-family:var(--f-num);font-weight:800;font-size:34px;line-height:1;color:var(--gold);font-variant-numeric:tabular-nums}
+.tasten{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.tasten .knopf,.padaktionen .knopf{width:auto;height:32px}
+.padaktionen{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px}
+.padaktionen .knopf{padding:0 12px}
+.padaktionen .pille{padding:6px 8px;font-size:15px}
+.unsichtbar{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
 .stammkopf{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
 .stammkopf .t{font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-dim)}
 .textknopf{font-size:14px;font-weight:600;color:var(--gold);padding:4px 2px}
@@ -171,6 +197,11 @@ p.klein:empty{display:none}
       <h2 id="mtitel"><small>by The Magical Brick</small>LifeCounter</h2>
       <button class="fertig" id="zu" type="button" data-t="zumTisch">Zum Tisch</button>
     </header>
+    <div class="homebox" id="homebox" hidden>
+      <div class="homekopf"><strong data-t="homeTitel">Als App speichern</strong><button type="button" class="textknopf" id="homeweg" aria-label="Hinweis ausblenden" data-t-aria="homeWeg">×</button></div>
+      <p class="klein" id="hometext"></p>
+      <button type="button" class="fertig" id="installieren" data-t="installieren" hidden>App installieren</button>
+    </div>
     <div class="gruppe"><span class="t" data-t="sprache">Sprache</span><div class="seg sprachen" id="sprache"></div></div>
     <div class="gruppe"><span class="t" data-t="anzahl">Spieler</span><div class="seg" id="anzahl"></div></div>
     <div class="gruppe"><span class="t" data-t="start">Startleben</span><div class="seg" id="start"></div></div>
@@ -211,8 +242,11 @@ p.klein:empty{display:none}
       <div class="aktionen"><button type="button" id="verlaufteilen" data-t="verlaufTeilen">Verlauf teilen</button></div>
     </div>
     <div class="gruppe"><span class="t" data-t="statistik">Statistik</span><div class="statistik" id="statistik"></div>
-      <div class="aktionen"><button type="button" id="statweg" class="gefahr"></button></div></div>
+      <div class="aktionen"><button type="button" id="sichern" data-t="sichern">Statistik sichern</button><button type="button" id="einlesen" data-t="einlesen">Sicherung einlesen</button><button type="button" id="statweg" class="gefahr"></button></div>
+      <input type="file" id="datei" class="unsichtbar" accept=".json,application/json" tabindex="-1" aria-hidden="true">
+      <p class="klein" id="statinfo" aria-live="polite"></p><p class="klein" data-t="sicherungHinweis"></p></div>
     <p class="klein" data-t="hilfe">Tippen links zieht einen Lebenspunkt ab, rechts gibt einen dazu. Gedrückt halten zählt weiter. Die Leiste unten im Feld öffnet Commander-Schaden, Gift, Steuer und mehr. Der Spielstand bleibt nur auf diesem Gerät.</p>
+    <button type="button" class="textknopf" id="anleitung" data-t="anleitung">Kurzanleitung</button>
   </div>
 </div>
 
@@ -223,6 +257,15 @@ p.klein:empty{display:none}
     <div class="gruppe"><span class="t" data-t="sieger">Gewinner</span><div class="reihe" id="siegerwahl"></div><p class="klein" id="siegerinfo"></p></div>
     <ul class="protokoll" id="endliste"></ul>
     <div class="aktionen"><button type="button" id="endeteilen" data-t="teilen">Teilen</button><button type="button" id="endeneu" class="gefahr"></button></div>
+  </div>
+</div>
+
+<div id="intro" hidden>
+  <div class="karte" role="dialog" aria-modal="true" aria-labelledby="ititel">
+    <header><h2 id="ititel"><small>LifeCounter by The Magical Brick</small><span data-t="introTitel">So geht's</span></h2></header>
+    <ol class="schritte"><li data-t="intro1"></li><li data-t="intro2"></li><li data-t="intro3"></li></ol>
+    <p class="klein" id="introhome"></p>
+    <button type="button" class="fertig" id="introlos" data-t="introLos">Los geht's</button>
   </div>
 </div>
 
@@ -265,7 +308,21 @@ de:{spieler:function(n){return"Spieler "+n;},tisch:"Spieltisch",menueAuf:"Menü 
   spielEnde:"Spiel beenden",endeTitel:"Spielende",sieger:"Gewinner",siegerWahl:"Wer hat gewonnen? Die Wahl zählt in der Statistik.",gespeichert:"In der Statistik gespeichert. Ein Tipp auf einen anderen Namen ändert es.",
   dauer:"Dauer",zeit:"Zeit",zuege:function(n){return n===1?"1 Zug":n+" Züge";},teilen:"Teilen",kopiert:"Kopiert",verlaufTeilen:"Verlauf teilen",
   statistik:"Statistik",statLeer:"Noch keine Partien gespeichert. Am Spielende den Gewinner antippen.",partien:function(n){return n===1?"1 Partie":n+" Partien";},
-  siege:function(w,g,p){return w+" von "+g+" gewonnen ("+p+" %)";},decks:"Decks",statLoeschen:"Statistik löschen"},
+  siege:function(w,g,p){return w+" von "+g+" gewonnen ("+p+" %)";},decks:"Decks",statLoeschen:"Statistik löschen",
+  rausAufgabe:"Aufgegeben",aufgeben:"Aufgeben",logAufgabe:"gibt auf",logWeiter:"spielt weiter",jederGegner:"Jeder Gegner",lebenWort:"Leben",
+  jederGegnerHinweis:"Ändert das Leben aller Gegner, die noch im Spiel sind, auf einmal.",
+  betrag:"Betrag eingeben",abziehen:"Abziehen",dazu:"Dazu",loeschen:"Letzte Ziffer löschen",abbrechen:"Abbrechen",
+  homeTitel:"Als App speichern",homeWeg:"Hinweis ausblenden",installieren:"App installieren",
+  homeText:"Auf dem Home-Bildschirm startet der LifeCounter im Vollbild wie eine App, und Statistik und Stammspieler werden nicht automatisch gelöscht.",
+  homeIos:"In Safari auf das Teilen-Symbol tippen, dann auf „Zum Home-Bildschirm“.",
+  homeAndere:"Im Browsermenü „App installieren“ oder „Zum Startbildschirm hinzufügen“ wählen.",
+  sichern:"Statistik sichern",einlesen:"Sicherung einlesen",
+  sicherungHinweis:"Die Sicherung speichert Statistik und Stammspieler als Datei, z. B. für ein neues Handy.",
+  eingelesen:function(a,m){return"Eingelesen: "+a+", "+m+" Stammspieler.";},einlesenFehler:"Die Datei ist keine LifeCounter-Sicherung.",
+  introTitel:"So geht's",intro1:"Feld links antippen: −1, rechts: +1. Gedrückt halten zählt schneller.",
+  intro2:"Die Leiste unten im Feld öffnet Commander-Schaden, Gift und mehr. Mit „±“ gibst du größere Beträge ein.",
+  intro3:"Der goldene Stein in der Mitte öffnet das Menü: Spieler, Namen, Würfel, Zuguhr, Verlauf und Statistik.",
+  introLos:"Los geht's",anleitung:"Kurzanleitung"},
 en:{spieler:function(n){return"Player "+n;},tisch:"Game table",menueAuf:"Open menu",zumTisch:"Back to table",sprache:"Language",anzahl:"Players",start:"Starting life",namen:"Names and colors",
   cmdLeben:"Commander damage reduces life",wach:"Keep screen on",wuerfeln:"Dice",w6:"Roll D6",w20:"Roll D20",muenze:"Flip a coin",startspieler:"Pick first player",
   ergebnisLeer:"The result appears here.",spiel:"Game",undo:"Undo last change",voll:"Full screen",neu:"New game",neuSicher:"Sure? Tap again",
@@ -293,7 +350,21 @@ en:{spieler:function(n){return"Player "+n;},tisch:"Game table",menueAuf:"Open me
   spielEnde:"End game",endeTitel:"Game over",sieger:"Winner",siegerWahl:"Who won? Your choice counts in the stats.",gespeichert:"Saved to the stats. Tap another name to change it.",
   dauer:"Duration",zeit:"Time",zuege:function(n){return n===1?"1 turn":n+" turns";},teilen:"Share",kopiert:"Copied",verlaufTeilen:"Share history",
   statistik:"Stats",statLeer:"No games saved yet. Tap the winner when a game ends.",partien:function(n){return n===1?"1 game":n+" games";},
-  siege:function(w,g,p){return w+" of "+g+" won ("+p+"%)";},decks:"Decks",statLoeschen:"Delete stats"},
+  siege:function(w,g,p){return w+" of "+g+" won ("+p+"%)";},decks:"Decks",statLoeschen:"Delete stats",
+  rausAufgabe:"Conceded",aufgeben:"Concede",logAufgabe:"concedes",logWeiter:"is back in the game",jederGegner:"Each opponent",lebenWort:"Life",
+  jederGegnerHinweis:"Changes the life of every opponent still in the game at once.",
+  betrag:"Enter amount",abziehen:"Lose",dazu:"Gain",loeschen:"Delete last digit",abbrechen:"Cancel",
+  homeTitel:"Save as an app",homeWeg:"Hide this tip",installieren:"Install app",
+  homeText:"From the home screen, LifeCounter opens full screen like an app, and stats and regular players aren't deleted automatically.",
+  homeIos:"In Safari, tap the Share icon, then “Add to Home Screen”.",
+  homeAndere:"In the browser menu, choose “Install app” or “Add to Home screen”.",
+  sichern:"Back up stats",einlesen:"Restore backup",
+  sicherungHinweis:"The backup saves stats and regular players as a file, e.g. for a new phone.",
+  eingelesen:function(a,m){return"Restored: "+a+", "+m+" regular players.";},einlesenFehler:"This file isn't a LifeCounter backup.",
+  introTitel:"How it works",intro1:"Tap the left of a field for −1, the right for +1. Hold to count faster.",
+  intro2:"The bar at the bottom of a field opens commander damage, poison and more. Use “±” to enter bigger amounts.",
+  intro3:"The gold brick in the middle opens the menu: players, names, dice, turn clock, history and stats.",
+  introLos:"Let's play",anleitung:"Quick guide"},
 es:{spieler:function(n){return"Jugador "+n;},tisch:"Mesa de juego",menueAuf:"Abrir menú",zumTisch:"Volver a la mesa",sprache:"Idioma",anzahl:"Jugadores",start:"Vidas iniciales",namen:"Nombres y colores",
   cmdLeben:"El daño de comandante resta vidas",wach:"Mantener la pantalla encendida",wuerfeln:"Dados",w6:"Tirar D6",w20:"Tirar D20",muenze:"Lanzar moneda",startspieler:"Sortear quién empieza",
   ergebnisLeer:"El resultado aparece aquí.",spiel:"Partida",undo:"Deshacer último cambio",voll:"Pantalla completa",neu:"Nueva partida",neuSicher:"¿Seguro? Toca otra vez",
@@ -321,7 +392,21 @@ es:{spieler:function(n){return"Jugador "+n;},tisch:"Mesa de juego",menueAuf:"Abr
   spielEnde:"Terminar partida",endeTitel:"Fin de la partida",sieger:"Ganador",siegerWahl:"¿Quién ha ganado? La elección cuenta en las estadísticas.",gespeichert:"Guardado en las estadísticas. Toca otro nombre para cambiarlo.",
   dauer:"Duración",zeit:"Tiempo",zuege:function(n){return n===1?"1 turno":n+" turnos";},teilen:"Compartir",kopiert:"Copiado",verlaufTeilen:"Compartir historial",
   statistik:"Estadísticas",statLeer:"Aún no hay partidas guardadas. Al terminar, toca al ganador.",partien:function(n){return n===1?"1 partida":n+" partidas";},
-  siege:function(w,g,p){return"Victorias: "+w+" de "+g+" ("+p+" %)";},decks:"Mazos",statLoeschen:"Borrar estadísticas"},
+  siege:function(w,g,p){return"Victorias: "+w+" de "+g+" ("+p+" %)";},decks:"Mazos",statLoeschen:"Borrar estadísticas",
+  rausAufgabe:"Se ha rendido",aufgeben:"Rendirse",logAufgabe:"se rinde",logWeiter:"vuelve a la partida",jederGegner:"Cada rival",lebenWort:"Vidas",
+  jederGegnerHinweis:"Cambia a la vez las vidas de todos los rivales que siguen en la partida.",
+  betrag:"Introducir cantidad",abziehen:"Restar",dazu:"Sumar",loeschen:"Borrar la última cifra",abbrechen:"Cancelar",
+  homeTitel:"Guardar como app",homeWeg:"Ocultar este aviso",installieren:"Instalar app",
+  homeText:"Desde la pantalla de inicio, LifeCounter se abre a pantalla completa como una app, y las estadísticas y los jugadores habituales no se borran automáticamente.",
+  homeIos:"En Safari, toca el icono de compartir y luego «Añadir a pantalla de inicio».",
+  homeAndere:"En el menú del navegador, elige «Instalar aplicación» o «Añadir a pantalla de inicio».",
+  sichern:"Guardar copia",einlesen:"Cargar copia",
+  sicherungHinweis:"La copia guarda las estadísticas y los jugadores habituales en un archivo, por ejemplo para un móvil nuevo.",
+  eingelesen:function(a,m){return"Cargado: "+a+", "+m+" jugadores habituales.";},einlesenFehler:"El archivo no es una copia de LifeCounter.",
+  introTitel:"Cómo funciona",intro1:"Toca la izquierda de una zona para −1 y la derecha para +1. Mantén pulsado para contar más rápido.",
+  intro2:"La barra inferior de cada zona abre daño de comandante, veneno y más. Con «±» introduces cantidades mayores.",
+  intro3:"El ladrillo dorado del centro abre el menú: jugadores, nombres, dados, reloj de turnos, historial y estadísticas.",
+  introLos:"¡A jugar!",anleitung:"Guía rápida"},
 fr:{spieler:function(n){return"Joueur "+n;},tisch:"Table de jeu",menueAuf:"Ouvrir le menu",zumTisch:"Retour à la table",sprache:"Langue",anzahl:"Joueurs",start:"Points de vie de départ",namen:"Noms et couleurs",
   cmdLeben:"Les blessures de commandant retirent des points de vie",wach:"Garder l'écran allumé",wuerfeln:"Dés",w6:"Lancer un D6",w20:"Lancer un D20",muenze:"Lancer une pièce",startspieler:"Tirer le premier joueur",
   ergebnisLeer:"Le résultat s'affiche ici.",spiel:"Partie",undo:"Annuler la dernière modification",voll:"Plein écran",neu:"Nouvelle partie",neuSicher:"Sûr ? Touchez encore",
@@ -349,7 +434,21 @@ fr:{spieler:function(n){return"Joueur "+n;},tisch:"Table de jeu",menueAuf:"Ouvri
   spielEnde:"Terminer la partie",endeTitel:"Fin de partie",sieger:"Gagnant",siegerWahl:"Qui a gagné\u00a0? Le choix compte dans les statistiques.",gespeichert:"Enregistré dans les statistiques. Touchez un autre nom pour modifier.",
   dauer:"Durée",zeit:"Temps",zuege:function(n){return n===1?"1 tour":n+" tours";},teilen:"Partager",kopiert:"Copié",verlaufTeilen:"Partager l'historique",
   statistik:"Statistiques",statLeer:"Aucune partie enregistrée. En fin de partie, touchez le gagnant.",partien:function(n){return n===1?"1 partie":n+" parties";},
-  siege:function(w,g,p){return w+(w>1?" victoires":" victoire")+" sur "+g+" ("+p+"\u00a0%)";},decks:"Decks",statLoeschen:"Effacer les statistiques"},
+  siege:function(w,g,p){return w+(w>1?" victoires":" victoire")+" sur "+g+" ("+p+"\u00a0%)";},decks:"Decks",statLoeschen:"Effacer les statistiques",
+  rausAufgabe:"A abandonné",aufgeben:"Abandonner",logAufgabe:"abandonne",logWeiter:"revient dans la partie",jederGegner:"Chaque adversaire",lebenWort:"Points de vie",
+  jederGegnerHinweis:"Modifie d'un coup les points de vie de tous les adversaires encore en jeu.",
+  betrag:"Saisir un montant",abziehen:"Retirer",dazu:"Ajouter",loeschen:"Effacer le dernier chiffre",abbrechen:"Annuler",
+  homeTitel:"Enregistrer comme app",homeWeg:"Masquer ce conseil",installieren:"Installer l'app",
+  homeText:"Depuis l'écran d'accueil, LifeCounter s'ouvre en plein écran comme une app, et les statistiques et joueurs habituels ne sont pas effacés automatiquement.",
+  homeIos:"Dans Safari, touchez l'icône Partager, puis «\u00a0Sur l'écran d'accueil\u00a0».",
+  homeAndere:"Dans le menu du navigateur, choisissez «\u00a0Installer l'application\u00a0» ou «\u00a0Ajouter à l'écran d'accueil\u00a0».",
+  sichern:"Sauvegarder",einlesen:"Restaurer",
+  sicherungHinweis:"La sauvegarde enregistre les statistiques et les joueurs habituels dans un fichier, par exemple pour un nouveau téléphone.",
+  eingelesen:function(a,m){return"Restauré\u00a0: "+a+", "+m+" joueurs habituels.";},einlesenFehler:"Ce fichier n'est pas une sauvegarde LifeCounter.",
+  introTitel:"Mode d'emploi",intro1:"Touchez la gauche d'une zone pour −1, la droite pour +1. Maintenez pour compter plus vite.",
+  intro2:"La barre en bas de chaque zone ouvre les blessures de commandant, le poison et plus encore. Avec «\u00a0±\u00a0», saisissez des montants plus grands.",
+  intro3:"La brique dorée au centre ouvre le menu\u00a0: joueurs, noms, dés, horloge de tours, historique et statistiques.",
+  introLos:"C'est parti",anleitung:"Guide rapide"},
 it:{spieler:function(n){return"Giocatore "+n;},tisch:"Tavolo da gioco",menueAuf:"Apri il menu",zumTisch:"Torna al tavolo",sprache:"Lingua",anzahl:"Giocatori",start:"Punti vita iniziali",namen:"Nomi e colori",
   cmdLeben:"Il danno da comandante toglie punti vita",wach:"Tieni lo schermo acceso",wuerfeln:"Dadi",w6:"Tira D6",w20:"Tira D20",muenze:"Lancia una moneta",startspieler:"Sorteggia chi inizia",
   ergebnisLeer:"Il risultato compare qui.",spiel:"Partita",undo:"Annulla l'ultima modifica",voll:"Schermo intero",neu:"Nuova partita",neuSicher:"Sicuro? Tocca di nuovo",
@@ -377,7 +476,21 @@ it:{spieler:function(n){return"Giocatore "+n;},tisch:"Tavolo da gioco",menueAuf:
   spielEnde:"Termina la partita",endeTitel:"Fine partita",sieger:"Vincitore",siegerWahl:"Chi ha vinto? La scelta conta nelle statistiche.",gespeichert:"Salvato nelle statistiche. Tocca un altro nome per cambiarlo.",
   dauer:"Durata",zeit:"Tempo",zuege:function(n){return n===1?"1 turno":n+" turni";},teilen:"Condividi",kopiert:"Copiato",verlaufTeilen:"Condividi la cronologia",
   statistik:"Statistiche",statLeer:"Nessuna partita salvata. A fine partita tocca il vincitore.",partien:function(n){return n===1?"1 partita":n+" partite";},
-  siege:function(w,g,p){return"Vittorie: "+w+" su "+g+" ("+p+"%)";},decks:"Mazzi",statLoeschen:"Cancella le statistiche"},
+  siege:function(w,g,p){return"Vittorie: "+w+" su "+g+" ("+p+"%)";},decks:"Mazzi",statLoeschen:"Cancella le statistiche",
+  rausAufgabe:"Si è arreso",aufgeben:"Arrendersi",logAufgabe:"si arrende",logWeiter:"torna in partita",jederGegner:"Ogni avversario",lebenWort:"Punti vita",
+  jederGegnerHinweis:"Cambia in una volta i punti vita di tutti gli avversari ancora in gioco.",
+  betrag:"Inserisci un valore",abziehen:"Togli",dazu:"Aggiungi",loeschen:"Cancella l'ultima cifra",abbrechen:"Annulla",
+  homeTitel:"Salva come app",homeWeg:"Nascondi questo suggerimento",installieren:"Installa l'app",
+  homeText:"Dalla schermata Home, LifeCounter si apre a schermo intero come un'app e statistiche e giocatori abituali non vengono cancellati automaticamente.",
+  homeIos:"In Safari tocca l'icona Condividi, poi «Aggiungi alla schermata Home».",
+  homeAndere:"Nel menu del browser scegli «Installa app» o «Aggiungi a schermata Home».",
+  sichern:"Salva backup",einlesen:"Carica backup",
+  sicherungHinweis:"Il backup salva statistiche e giocatori abituali in un file, ad esempio per un nuovo telefono.",
+  eingelesen:function(a,m){return"Caricato: "+a+", "+m+" giocatori abituali.";},einlesenFehler:"Il file non è un backup di LifeCounter.",
+  introTitel:"Come funziona",intro1:"Tocca la sinistra di una zona per −1, la destra per +1. Tieni premuto per contare più in fretta.",
+  intro2:"La barra in basso di ogni zona apre danno da comandante, veleno e altro. Con «±» inserisci valori più grandi.",
+  intro3:"Il mattoncino dorato al centro apre il menu: giocatori, nomi, dadi, orologio dei turni, cronologia e statistiche.",
+  introLos:"Si gioca",anleitung:"Guida rapida"},
 pt:{spieler:function(n){return"Jogador "+n;},tisch:"Mesa de jogo",menueAuf:"Abrir menu",zumTisch:"Voltar à mesa",sprache:"Idioma",anzahl:"Jogadores",start:"Vida inicial",namen:"Nomes e cores",
   cmdLeben:"Dano de comandante tira pontos de vida",wach:"Manter a tela ligada",wuerfeln:"Dados",w6:"Rolar D6",w20:"Rolar D20",muenze:"Jogar moeda",startspieler:"Sortear quem começa",
   ergebnisLeer:"O resultado aparece aqui.",spiel:"Partida",undo:"Desfazer última alteração",voll:"Tela cheia",neu:"Nova partida",neuSicher:"Tem certeza? Toque de novo",
@@ -405,7 +518,21 @@ pt:{spieler:function(n){return"Jogador "+n;},tisch:"Mesa de jogo",menueAuf:"Abri
   spielEnde:"Encerrar partida",endeTitel:"Fim de jogo",sieger:"Vencedor",siegerWahl:"Quem venceu? A escolha conta nas estatísticas.",gespeichert:"Salvo nas estatísticas. Toque em outro nome para mudar.",
   dauer:"Duração",zeit:"Tempo",zuege:function(n){return n===1?"1 turno":n+" turnos";},teilen:"Compartilhar",kopiert:"Copiado",verlaufTeilen:"Compartilhar histórico",
   statistik:"Estatísticas",statLeer:"Nenhuma partida salva. No fim do jogo, toque no vencedor.",partien:function(n){return n===1?"1 partida":n+" partidas";},
-  siege:function(w,g,p){return"Vitórias: "+w+" de "+g+" ("+p+"%)";},decks:"Decks",statLoeschen:"Apagar estatísticas"}
+  siege:function(w,g,p){return"Vitórias: "+w+" de "+g+" ("+p+"%)";},decks:"Decks",statLoeschen:"Apagar estatísticas",
+  rausAufgabe:"Desistiu",aufgeben:"Desistir",logAufgabe:"desiste",logWeiter:"volta ao jogo",jederGegner:"Cada oponente",lebenWort:"Pontos de vida",
+  jederGegnerHinweis:"Altera de uma vez a vida de todos os oponentes que ainda estão no jogo.",
+  betrag:"Digitar valor",abziehen:"Perder",dazu:"Ganhar",loeschen:"Apagar o último dígito",abbrechen:"Cancelar",
+  homeTitel:"Salvar como app",homeWeg:"Ocultar esta dica",installieren:"Instalar app",
+  homeText:"Na tela de início, o LifeCounter abre em tela cheia como um app, e as estatísticas e os jogadores frequentes não são apagados automaticamente.",
+  homeIos:"No Safari, toque no ícone de compartilhar e depois em “Adicionar à Tela de Início”.",
+  homeAndere:"No menu do navegador, escolha “Instalar app” ou “Adicionar à tela inicial”.",
+  sichern:"Fazer backup",einlesen:"Restaurar backup",
+  sicherungHinweis:"O backup salva estatísticas e jogadores frequentes em um arquivo, por exemplo para um celular novo.",
+  eingelesen:function(a,m){return"Restaurado: "+a+", "+m+" jogadores frequentes.";},einlesenFehler:"O arquivo não é um backup do LifeCounter.",
+  introTitel:"Como funciona",intro1:"Toque à esquerda de uma área para −1 e à direita para +1. Segure para contar mais rápido.",
+  intro2:"A barra embaixo de cada área abre dano de comandante, veneno e mais. Com “±” você digita valores maiores.",
+  intro3:"O tijolo dourado no meio abre o menu: jogadores, nomes, dados, relógio de turnos, histórico e estatísticas.",
+  introLos:"Vamos jogar",anleitung:"Guia rápido"}
 };
 function spracheErmitteln(){
   var c="";
@@ -428,7 +555,7 @@ function spieler(i,leben){return {id:"p"+i+"-"+Math.random().toString(36).slice(
 function neuerZustand(n,leben){var s={n:n,start:leben,anfang:leben,beginn:0,ende:0,endeGezeigt:false,cmdLeben:true,monarch:null,initiative:null,spieler:[]};for(var i=0;i<6;i++)s.spieler.push(spieler(i,leben));return normalisieren(s);}
 /* Aeltere gespeicherte Spielstaende bekommen die neuen Felder (Sturm, Schaetze, Segen, Tag/Nacht, Zuguhr, Verlauf) */
 function normalisieren(s){
-  s.spieler.forEach(function(p){ZAEHLER.forEach(function(k){p[k]=p[k]||0;});p.segen=!!p.segen;p.cmd=p.cmd||{};p.deck=p.deck||"";});
+  s.spieler.forEach(function(p){ZAEHLER.forEach(function(k){p[k]=p[k]||0;});p.segen=!!p.segen;p.cmd=p.cmd||{};p.deck=p.deck||"";p.aufgegeben=!!p.aufgegeben;});
   if(s.tag!=="tag"&&s.tag!=="nacht")s.tag=null;
   if(!Array.isArray(s.log))s.log=[];
   if(!s.anfang)s.anfang=s.start;
@@ -453,6 +580,7 @@ function merken(buendeln){var jetzt=Date.now();if(buendeln&&jetzt-letzteAenderun
 function aktive(){return S.spieler.slice(0,S.n);}
 function quellen(){var q=[];aktive().forEach(function(p){q.push({key:p.id+":a",p:p,teil:p.partner?"A":""});if(p.partner)q.push({key:p.id+":b",p:p,teil:"B"});});return q;}
 function raus(p){
+  if(p.aufgegeben)return t("rausAufgabe");
   if(p.leben<=0)return t("rausLeben");
   if(p.gift>=10)return t("rausGift");
   for(var k in p.cmd){if(p.cmd[k]>=21){var src=quellen().filter(function(q){return q.key===k;})[0];return t("rausCmd",src?src.p.name+(src.teil?" "+src.teil:""):"");}}
@@ -472,7 +600,7 @@ function sitze(n){
 }
 
 var tisch=document.getElementById("tisch");
-var felder=[];var offenesBlatt=null;var deltas={};var haltStopps=[];
+var felder=[];var offenesBlatt=null,offenesArt="blatt";var deltas={};var haltStopps=[];var alleSumme={};var padWert="";
 var ro=("ResizeObserver" in window)?new ResizeObserver(function(es){es.forEach(function(e){groesse(e.target);});}):null;
 
 function groesse(f){
@@ -484,10 +612,12 @@ function groesse(f){
   steinPlatz(f);engPruefen(f);
 }
 /* Die Kopfzeile laesst an dem Ende Platz, das unter dem goldenen Stein in der Tischmitte liegt */
-function steinPlatz(f){
-  var k=f.querySelector(".kopf"),st=document.getElementById("stein");if(!k||!st)return;
+function steinPlatz(f){var k=f.querySelector(".kopf");if(k)steinAusweichen(k,+f.dataset.rot);}
+/* Gilt fuer jede Zeile am inneren Feldrand: Kopfzeile, Kopf von Detailblatt und Tastenfeld */
+function steinAusweichen(k,rot){
+  var st=document.getElementById("stein");if(!k||!st)return;
   k.style.paddingLeft=k.style.paddingRight="";k.classList.remove("steinmitte");
-  var s=st.getBoundingClientRect(),r=k.getBoundingClientRect(),rot=+f.dataset.rot,quer=(rot===90||rot===270);
+  var s=st.getBoundingClientRect(),r=k.getBoundingClientRect(),quer=(rot===90||rot===270);
   if(r.right<s.left-6||r.left>s.right+6||r.bottom<s.top-6||r.top>s.bottom+6)return;
   var a=quer?r.top:r.left,b=quer?r.bottom:r.right,lo=(quer?s.top:s.left)-6,hi=(quer?s.bottom:s.right)+6;
   var niedrig=lo<=a?hi-a:0,hoch=hi>=b?b-lo:0;if(!niedrig&&!hoch){k.classList.add("steinmitte");return;}/* Stein mitten auf der Zeile: Name davor, Marken und Uhr dahinter */
@@ -539,20 +669,25 @@ function zeichnen(){
       (p.sturm?'<button type="button" class="chip" data-blatt="'+i+'">'+t("sturm")+'<b>'+p.sturm+'</b></button>':'')+
       (p.schaetze?'<button type="button" class="chip" data-blatt="'+i+'">'+t("schaetze")+'<b>'+p.schaetze+'</b></button>':'')+
       (p.strahlung?'<button type="button" class="chip" data-blatt="'+i+'">'+t("strahlung")+'<b>'+p.strahlung+'</b></button>':'')+
+      '<button type="button" class="chip" data-pad="'+i+'" aria-label="'+t("betrag")+'">±</button>'+
       '<button type="button" class="chip" data-blatt="'+i+'">'+t("mehr")+'</button>';
     var d=deltas[p.id],de=f.querySelector(".delta");
     if(d&&d.wert){de.textContent=(d.wert>0?"+":"−")+Math.abs(d.wert);de.classList.add("an");}else{de.classList.remove("an");}
     var grund=raus(p),r=f.querySelector(".raus");r.hidden=!grund;r.querySelector("span").textContent=grund;
-    if(offenesBlatt===i)blattFuellen(i);
+    if(offenesBlatt===i){if(offenesArt==="pad")padFuellen(i);else blattFuellen(i);}
   });
   speichern();uhrTick();felder.forEach(engPruefen);
 }
 
 function leben(i,d){
   var p=S.spieler[i];merken(true);p.leben+=d;protokoll({p:p.id,a:"leben",d:d,w:p.leben});
+  deltaZeigen(p,d);
+  zeichnen();endePruefen();
+}
+/* Kurze Anzeige der Aenderung (z. B. -3) im Feld */
+function deltaZeigen(p,d){
   var dd=deltas[p.id]||(deltas[p.id]={wert:0,t:0});dd.wert+=d;clearTimeout(dd.t);
   dd.t=setTimeout(function(){dd.wert=0;zeichnen();},1800);
-  zeichnen();endePruefen();
 }
 function halten(btn,i,d){
   var t1=0,t2=0;
@@ -569,14 +704,16 @@ function halten(btn,i,d){
 tisch.addEventListener("click",function(e){
   var z=e.target.closest("[data-zug]");if(z){zugAktion(z.dataset.zug,+z.dataset.i);return;}
   var tg=e.target.closest("[data-tag]");if(tg){tagSetzen(S.tag==="tag"?"nacht":"tag");return;}
+  var pd=e.target.closest("[data-pad]");if(pd){padOeffnen(+pd.dataset.pad);return;}
+  var zf=e.target.closest("[data-ziffer],[data-padakt]");if(zf){padAktion(zf);return;}
   var c=e.target.closest("[data-blatt]");if(c){blattOeffnen(+c.dataset.blatt);return;}
   var a=e.target.closest("[data-akt]");if(a){blattAktion(a);}
 });
 function blattOeffnen(i){
-  blattSchliessen();offenesBlatt=i;var f=felder[i];var b=document.createElement("div");b.className="blatt";
+  blattSchliessen();offenesBlatt=i;offenesArt="blatt";var f=felder[i];var b=document.createElement("div");b.className="blatt";
   f.querySelector(".innen").appendChild(b);blattFuellen(i);
 }
-function blattSchliessen(){if(offenesBlatt===null)return;var f=felder[offenesBlatt];var b=f&&f.querySelector(".blatt");if(b)b.remove();offenesBlatt=null;}
+function blattSchliessen(){if(offenesBlatt===null)return;var f=felder[offenesBlatt];var b=f&&f.querySelector(".blatt");if(b)b.remove();offenesBlatt=null;offenesArt="blatt";alleSumme={};padWert="";}
 function zeile(lbl,farbe,akt,wert,tot,i,key){
   return '<div class="zeile"><div class="lbl">'+(farbe?'<span class="punkt" style="background:'+farbe+'"></span>':'')+'<span>'+lbl+'</span></div>'+
     '<div class="zahl"><button type="button" class="knopf" data-akt="'+akt+'" data-i="'+i+'" data-k="'+(key||"")+'" data-d="-1" aria-label="'+t("minusEins",lbl)+'">−</button>'+
@@ -592,6 +729,9 @@ function blattFuellen(i){
   if(!qs.length)h+='<p class="hinweis">'+t("keineGegner")+'</p>';
   qs.forEach(function(q){var v=p.cmd[q.key]||0;h+=zeile(esc(q.p.name)+(q.teil?" · "+q.teil:""),q.p.farbe,"cmd",v,v>=21,i,q.key);});
   h+='<p class="hinweis">'+t("cmdRegel")+(S.cmdLeben?t("cmdAbzug"):'')+'</p>';
+  h+='<h3>'+t("jederGegner")+'</h3>';
+  h+=zeile(t("lebenWort"),null,"alle",alleSumme[p.id]?vz(alleSumme[p.id]):"0",false,i);
+  h+='<p class="hinweis">'+t("jederGegnerHinweis")+'</p>';
   h+='<h3>'+t("zaehler")+'</h3>';
   h+=zeile(t("gift"),null,"gift",p.gift,p.gift>=10,i);
   h+=zeile(t("gewirkt",2*p.steuer),null,"steuer",p.steuer,false,i);
@@ -604,8 +744,9 @@ function blattFuellen(i){
      '<button type="button" class="pille" data-akt="monarch" data-i="'+i+'" aria-pressed="'+(S.monarch===p.id)+'">'+t("monarch")+'</button>'+
      '<button type="button" class="pille" data-akt="initiative" data-i="'+i+'" aria-pressed="'+(S.initiative===p.id)+'">'+t("initiative")+'</button>'+
      '<button type="button" class="pille" data-akt="segen" data-i="'+i+'" aria-pressed="'+p.segen+'">'+t("segen")+'</button>'+
-     '<button type="button" class="pille" data-akt="partner" data-i="'+i+'" aria-pressed="'+p.partner+'">'+t("partner")+'</button></div>';
-  b.innerHTML=h;
+     '<button type="button" class="pille" data-akt="partner" data-i="'+i+'" aria-pressed="'+p.partner+'">'+t("partner")+'</button></div>'+
+     '<div class="reihe"><button type="button" class="pille gefahrpille" data-akt="aufgabe" data-i="'+i+'" aria-pressed="'+p.aufgegeben+'">'+t("aufgeben")+'</button></div>';
+  b.innerHTML=h;steinAusweichen(b.querySelector(".oben"),+f.dataset.rot);
 }
 function blattAktion(a){
   var akt=a.dataset.akt;if(akt==="zu"){blattSchliessen();return;}
@@ -614,17 +755,21 @@ function blattAktion(a){
     if(neu!==alt)protokoll({p:p.id,a:"cmd",q:k,d:neu-alt,w:neu,L:S.cmdLeben?p.leben:undefined});}
   else if(ZAEHLER.indexOf(akt)>=0){var vor=p[akt]||0;p[akt]=Math.max(0,vor+d);if(akt==="gift"&&p.gift!==vor)protokoll({p:p.id,a:"gift",d:p.gift-vor,w:p.gift});}
   else if(akt==="segen"){p.segen=!p.segen;}
+  else if(akt==="alle"){var ziele={},n=0;
+    aktive().forEach(function(o){if(o.id!==p.id&&!raus(o)){o.leben+=d;ziele[o.id]=o.leben;deltaZeigen(o,d);n++;}});
+    if(n){alleSumme[p.id]=(alleSumme[p.id]||0)+d;protokoll({p:p.id,a:"alle",d:d,ziele:ziele});}}
+  else if(akt==="aufgabe"){p.aufgegeben=!p.aufgegeben;protokoll({p:p.id,a:"aufgabe",w:p.aufgegeben});if(p.aufgegeben&&dranId()===p.id)zugWeiter();}
   else if(akt==="monarch"||akt==="initiative"){S[akt]=(S[akt]===p.id)?null:p.id;}
   else if(akt==="partner"){p.partner=!p.partner;if(!p.partner){S.spieler.forEach(function(o){delete o.cmd[p.id+":b"];});}}
   zeichnen();endePruefen();
 }
 
 /* Menue */
-var menue=document.getElementById("menue"),ende=document.getElementById("ende");
-document.getElementById("stein").addEventListener("click",function(){blattSchliessen();menueFuellen();menue.hidden=false;document.getElementById("zu").focus();});
+var menue=document.getElementById("menue"),ende=document.getElementById("ende"),intro=document.getElementById("intro");
+document.getElementById("stein").addEventListener("click",function(){blattSchliessen();document.getElementById("statinfo").textContent="";menueFuellen();menue.hidden=false;document.getElementById("zu").focus();});
 document.getElementById("zu").addEventListener("click",function(){menue.hidden=true;});
 menue.addEventListener("click",function(e){if(e.target===menue)menue.hidden=true;});
-document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!ende.hidden)ende.hidden=true;else if(!menue.hidden)menue.hidden=true;else blattSchliessen();}});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){if(!intro.hidden)document.getElementById("introlos").click();else if(!ende.hidden)ende.hidden=true;else if(!menue.hidden)menue.hidden=true;else blattSchliessen();}});
 function seg(el,werte,aktuell,fn){el.innerHTML="";werte.forEach(function(v){var b=document.createElement("button");b.type="button";b.textContent=v;b.setAttribute("aria-pressed",String(v===aktuell));b.addEventListener("click",function(){fn(v);});el.appendChild(b);});}
 function menueFuellen(){
   var sp=document.getElementById("sprache");sp.innerHTML="";
@@ -645,7 +790,7 @@ function menueFuellen(){
     nm.appendChild(fb);nm.appendChild(inp);nm.appendChild(dk);nm.appendChild(lv);
   });
   document.getElementById("cmdleben").setAttribute("aria-pressed",String(S.cmdLeben));
-  document.getElementById("wach").setAttribute("aria-pressed",String(!!sperre));
+  wachSchalter();homeZeigen();
   var neu=document.getElementById("neu");neu.classList.remove("sicher");neu.textContent=t("neu");
   uhrMenue();tagMenue();protokollZeigen();stammZeigen();statZeigen();
 }
@@ -680,7 +825,7 @@ Array.prototype.forEach.call(document.querySelectorAll("[data-wurf]"),function(b
 function protokoll(e){
   var jetzt=Date.now(),L=S.log,z=L[L.length-1];if(!S.beginn)S.beginn=jetzt;
   if(e.d!==undefined&&z&&z.p===e.p&&z.a===e.a&&z.q===e.q&&jetzt-z.t2<2500){
-    z.d+=e.d;z.w=e.w;if(e.L!==undefined)z.L=e.L;z.t2=jetzt;if(!z.d)L.pop();return;}
+    z.d+=e.d;z.w=e.w;if(e.L!==undefined)z.L=e.L;if(e.ziele){z.ziele=z.ziele||{};for(var zk in e.ziele)z.ziele[zk]=e.ziele[zk];}z.t2=jetzt;if(!z.d)L.pop();return;}
   e.t=e.t2=jetzt;e.z=S.uhr.zug||0;L.push(e);if(L.length>250)L.shift();
 }
 function vz(d){return(d<0?"−":"+")+Math.abs(d);}
@@ -696,6 +841,9 @@ function protokollZeigen(){
     var e=S.log[j],zeit='<span class="lz">'+new Date(e.t).toLocaleTimeString(SPR,{hour:"2-digit",minute:"2-digit"})+'</span>';
     if(e.a==="zug"){h+='<li class="trenner">'+zeit+'<span>'+esc(t("zug",e.z)+" · "+(N[e.p]||""))+'</span></li>';continue;}
     if(e.a==="tag"){h+='<li class="trenner">'+zeit+'<span>'+esc(t(e.w==="tag"?"logTag":e.w==="nacht"?"logNacht":"logTagAus"))+'</span></li>';continue;}
+    var punkt='<span class="punkt" style="background:'+(F[e.p]||"#777")+'"></span><span class="ln">'+esc(N[e.p]||"?")+'</span>';
+    if(e.a==="aufgabe"){h+='<li>'+zeit+punkt+'<span>'+esc(t(e.w?"logAufgabe":"logWeiter"))+'</span></li>';continue;}
+    if(e.a==="alle"){h+='<li>'+zeit+punkt+'<span>'+esc(t("jederGegner"))+'</span><span class="lw"><b class="'+(e.d<0?"ab":"auf")+'">'+vz(e.d)+'</b></span></li>';continue;}
     var schlecht=e.a==="leben"?e.d<0:e.d>0,was="",wert='<b class="'+(schlecht?"ab":"auf")+'">'+vz(e.d)+'</b> → '+e.w;
     if(e.a==="cmd"){was=t("cmdVon",Q[e.q]||N[String(e.q).split(":")[0]]||"?");if(e.L!==undefined&&e.L!==null)wert+=" · "+esc(t("lp",e.L));}
     else if(e.a==="gift")was=t("gift");
@@ -708,8 +856,12 @@ function protokollZeigen(){
 function grafikZeigen(){
   var g=document.getElementById("grafik"),ps=aktive(),a0=S.anfang||S.start,w={},serie={},k=0;
   ps.forEach(function(p){w[p.id]=a0;serie[p.id]=[a0];});
-  S.log.forEach(function(e){if(!serie[e.p])return;var v=e.a==="leben"?e.w:(e.a==="cmd"&&e.L!==undefined&&e.L!==null?e.L:null);if(v===null)return;
-    k++;w[e.p]=v;ps.forEach(function(p){serie[p.id].push(w[p.id]);});});
+  S.log.forEach(function(e){
+    var neu=null,v,id,treffer=false;
+    if(e.a==="alle"&&e.ziele)neu=e.ziele;
+    else{v=e.a==="leben"?e.w:(e.a==="cmd"&&e.L!==undefined&&e.L!==null?e.L:null);if(v!==null&&v!==undefined){neu={};neu[e.p]=v;}}
+    if(!neu)return;for(id in neu)if(serie[id]){w[id]=neu[id];treffer=true;}if(!treffer)return;
+    k++;ps.forEach(function(p){serie[p.id].push(w[p.id]);});});
   var rahmen=document.getElementById("grafikrahmen");
   if(!k){rahmen.hidden=true;g.innerHTML="";return;}
   /* Massstab nach den echten Werten (mindestens 10 Punkte Spanne), links Platz fuer die Beschriftung */
@@ -865,6 +1017,7 @@ document.getElementById("endeneu").addEventListener("click",function(){sicherKno
 function statZeigen(){
   var el=document.getElementById("statistik"),a=partienLaden(),wb=document.getElementById("statweg");
   wb.classList.remove("sicher");wb.textContent=t("statLoeschen");wb.hidden=!a.length;
+  document.getElementById("sichern").hidden=!a.length&&!stammLaden().length;
   if(!a.length){el.innerHTML='<p class="klein">'+esc(t("statLeer"))+'</p>';return;}
   var sp={},dk={};
   function zaehl(o,name,sieg){var k=String(name).trim().toLowerCase();var x=o[k]||(o[k]={n:String(name).trim(),g:0,w:0});x.g++;if(sieg)x.w++;}
@@ -883,6 +1036,8 @@ function eintragText(e,N,Q){
   var z=uhrzeit(e.t)+"  ";
   if(e.a==="zug")return z+t("zug",e.z)+" · "+(N[e.p]||"");
   if(e.a==="tag")return z+t(e.w==="tag"?"logTag":e.w==="nacht"?"logNacht":"logTagAus");
+  if(e.a==="aufgabe")return z+(N[e.p]||"?")+" "+t(e.w?"logAufgabe":"logWeiter");
+  if(e.a==="alle")return z+(N[e.p]||"?")+": "+t("jederGegner")+" "+vz(e.d);
   var s=z+(N[e.p]||"?")+" ";
   if(e.a==="cmd")s+=t("cmdVon",Q[e.q]||N[String(e.q).split(":")[0]]||"?")+" ";else if(e.a==="gift")s+=t("gift")+" ";
   s+=vz(e.d)+" → "+e.w;if(e.a==="cmd"&&e.L!==undefined&&e.L!==null)s+=" · "+t("lp",e.L);
@@ -908,18 +1063,102 @@ function teilen(btn){
 document.getElementById("verlaufteilen").addEventListener("click",function(){teilen(this);});
 document.getElementById("endeteilen").addEventListener("click",function(){teilen(this);});
 
-/* Bildschirm wach halten */
-var sperre=null;
-function wachAn(){if(!("wakeLock" in navigator)){ergebnis(t("wachNein"));return Promise.resolve();}
-  return navigator.wakeLock.request("screen").then(function(s){sperre=s;s.addEventListener("release",function(){sperre=null;menueFuellen();});menueFuellen();}).catch(function(){sperre=null;ergebnis(t("wachAbgelehnt"));menueFuellen();});}
-document.getElementById("wach").addEventListener("click",function(){if(sperre){sperre.release();sperre=null;try{localStorage.removeItem(KEY+"-wach");}catch(e){}menueFuellen();}else{try{localStorage.setItem(KEY+"-wach","1");}catch(e){}wachAn();}});
-document.addEventListener("visibilitychange",function(){var w=false;try{w=localStorage.getItem(KEY+"-wach")==="1";}catch(e){}if(document.visibilityState==="visible"&&w&&!sperre)wachAn();});
-tisch.addEventListener("pointerdown",function once(){var w=false;try{w=localStorage.getItem(KEY+"-wach")==="1";}catch(e){}if(w&&!sperre)wachAn();},{once:true});
+/* Betrag eingeben: eigenes Tastenfeld im Feld (mitgedreht, ohne Handy-Tastatur) */
+function padOeffnen(i){blattSchliessen();offenesBlatt=i;offenesArt="pad";padWert="";var b=document.createElement("div");b.className="blatt pad";felder[i].querySelector(".innen").appendChild(b);padFuellen(i);}
+function padFuellen(i){
+  var b=felder[i]&&felder[i].querySelector(".blatt");if(!b)return;var p=S.spieler[i];
+  var h='<div class="oben"><div class="padkopf"><output class="padwert" aria-label="'+t("betrag")+' – '+esc(p.name)+'">'+(padWert||"0")+'</output></div><button type="button" class="fertig" data-padakt="zu">'+t("abbrechen")+'</button></div><div class="tasten">';
+  "1234567890".split("").forEach(function(z){h+='<button type="button" class="knopf" data-ziffer="'+z+'">'+z+'</button>';});
+  h+='</div><div class="padaktionen"><button type="button" class="knopf" data-padakt="weg" aria-label="'+t("loeschen")+'">⌫</button>'+
+     '<button type="button" class="pille gefahrpille" data-padakt="ab">− '+t("abziehen")+'</button><button type="button" class="pille" data-padakt="dazu">+ '+t("dazu")+'</button></div>';
+  b.innerHTML=h;steinAusweichen(b.querySelector(".oben"),+felder[i].dataset.rot);
+}
+function padAktion(el){
+  var i=offenesBlatt;if(i===null||offenesArt!=="pad")return;
+  if(el.dataset.ziffer!==undefined){if(padWert.length<3)padWert=(padWert+el.dataset.ziffer).replace(/^0+/,"");padFuellen(i);return;}
+  var a=el.dataset.padakt;
+  if(a==="zu"){blattSchliessen();return;}
+  if(a==="weg"){padWert=padWert.slice(0,-1);padFuellen(i);return;}
+  var n=parseInt(padWert,10)||0;if(!n)return;
+  blattSchliessen();leben(i,a==="ab"?-n:n);
+}
+
+/* Hinweis: als App auf den Home-Bildschirm legen. Dort startet sie im Vollbild,
+   und Safari loescht die gespeicherten Daten nicht nach 7 Tagen ohne Besuch. */
+var installEreignis=null;
+window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();installEreignis=e;homeZeigen();});
+window.addEventListener("appinstalled",function(){installEreignis=null;homeZeigen();});
+function alsApp(){try{return window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;}catch(e){return false;}}
+function istIos(){var u=navigator.userAgent||"";return/iPad|iPhone|iPod/.test(u)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);}
+function homeHinweis(){return t("homeText")+" "+t(istIos()?"homeIos":"homeAndere");}
+function homeZeigen(){
+  var weg=false;try{weg=localStorage.getItem(KEY+"-homeweg")==="1";}catch(e){}
+  document.getElementById("homebox").hidden=alsApp()||weg;
+  document.getElementById("hometext").textContent=homeHinweis();
+  document.getElementById("installieren").hidden=!installEreignis;
+}
+document.getElementById("homeweg").addEventListener("click",function(){try{localStorage.setItem(KEY+"-homeweg","1");}catch(e){}homeZeigen();});
+document.getElementById("installieren").addEventListener("click",function(){if(!installEreignis)return;var ev=installEreignis;ev.prompt();
+  ev.userChoice.then(function(){installEreignis=null;homeZeigen();},function(){});});
+
+/* Sicherung: Statistik und Stammspieler als Datei, z. B. fuer ein neues Handy */
+function herunterladen(text,name){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"application/json"}));a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},2000);}
+function sichern(){
+  var daten={app:"LifeCounterByTMB",version:1,erstellt:new Date().toISOString(),partien:partienLaden(),stamm:stammLaden()};
+  var name="lifecounter-sicherung-"+new Date().toISOString().slice(0,10)+".json",text=JSON.stringify(daten),datei=null;
+  try{datei=new File([text],name,{type:"application/json"});}catch(e){}
+  if(datei&&navigator.canShare&&navigator.share){var geht=false;try{geht=navigator.canShare({files:[datei]});}catch(e){}
+    if(geht){navigator.share({files:[datei],title:name}).catch(function(err){if(!err||err.name!=="AbortError")herunterladen(text,name);});return;}}
+  herunterladen(text,name);
+}
+function einlesen(datei){
+  var info=document.getElementById("statinfo"),r=new FileReader();
+  r.onload=function(){
+    var d=null;try{d=JSON.parse(r.result);}catch(e){}
+    if(!d||d.app!=="LifeCounterByTMB"||!Array.isArray(d.partien)){info.textContent=t("einlesenFehler");return;}
+    var a=partienLaden(),ids={},neuP=0;a.forEach(function(x){ids[x.id]=1;});
+    d.partien.forEach(function(x){if(x&&typeof x.id==="string"&&Array.isArray(x.spieler)&&!ids[x.id]){a.push(x);ids[x.id]=1;neuP++;}});
+    a.sort(function(x,y){return(x.datum||0)-(y.datum||0);});partienSichern(a);
+    var st=stammLaden(),neuS=0;
+    (Array.isArray(d.stamm)?d.stamm:[]).forEach(function(x){if(x&&x.name&&!st.some(function(y){return gleich(y.name,x.name);})){
+      st.push({name:String(x.name).slice(0,18),farbe:FARBEN.indexOf(x.farbe)>=0?x.farbe:FARBEN[0],deck:String(x.deck||"").slice(0,24)});neuS++;}});
+    stammSichern(st);statZeigen();stammZeigen();info.textContent=t("eingelesen",t("partien",neuP),neuS);
+  };
+  r.onerror=function(){info.textContent=t("einlesenFehler");};
+  r.readAsText(datei);
+}
+document.getElementById("sichern").addEventListener("click",sichern);
+document.getElementById("einlesen").addEventListener("click",function(){document.getElementById("datei").click();});
+document.getElementById("datei").addEventListener("change",function(){var f=this.files&&this.files[0];if(f)einlesen(f);this.value="";});
+
+/* Kurzanleitung beim ersten Start, spaeter ueber das Menue */
+function introZeigen(){document.getElementById("introhome").textContent=alsApp()?"":homeHinweis();menue.hidden=true;intro.hidden=false;document.getElementById("introlos").focus();}
+document.getElementById("introlos").addEventListener("click",function(){intro.hidden=true;try{localStorage.setItem(KEY+"-intro","1");}catch(e){}});
+document.getElementById("anleitung").addEventListener("click",introZeigen);
+
+/* Bildschirm wach halten: ab Werk an, im Menue abschaltbar */
+var sperre=null,wachAnfrage=false;
+function wachGewuenscht(){try{return localStorage.getItem(KEY+"-wach")!=="0";}catch(e){return true;}}
+function wachSchalter(){document.getElementById("wach").setAttribute("aria-pressed",String(wachGewuenscht()&&("wakeLock" in navigator)));}
+function wachAn(leise){
+  if(!("wakeLock" in navigator)){if(!leise)ergebnis(t("wachNein"));wachSchalter();return;}
+  if(wachAnfrage||sperre)return;wachAnfrage=true;
+  navigator.wakeLock.request("screen").then(function(s){wachAnfrage=false;sperre=s;s.addEventListener("release",function(){sperre=null;});wachSchalter();})
+    .catch(function(){wachAnfrage=false;sperre=null;if(!leise)ergebnis(t("wachAbgelehnt"));wachSchalter();});
+}
+document.getElementById("wach").addEventListener("click",function(){
+  if(wachGewuenscht()&&("wakeLock" in navigator)){try{localStorage.setItem(KEY+"-wach","0");}catch(e){}if(sperre){sperre.release();sperre=null;}wachSchalter();}
+  else{try{localStorage.setItem(KEY+"-wach","1");}catch(e){}wachAn(false);wachSchalter();}
+});
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"&&wachGewuenscht())wachAn(true);});
+document.addEventListener("pointerdown",function(){if(wachGewuenscht()&&("wakeLock" in navigator))wachAn(true);});
+if(wachGewuenscht())wachAn(true);
 
 window.addEventListener("resize",function(){felder.forEach(groesse);});
 setInterval(uhrTick,1000);
 texteSetzen();
 aufbauen();
+(function(){var gesehen=false;try{gesehen=localStorage.getItem(KEY+"-intro")==="1";}catch(e){}if(!gesehen)introZeigen();})();
 if("serviceWorker" in navigator&&location.protocol==="https:"&&!/claude/.test(location.hostname)){try{navigator.serviceWorker.register("sw.js").catch(function(){});}catch(e){}}
 })();
 </script>
