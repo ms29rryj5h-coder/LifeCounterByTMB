@@ -13,7 +13,7 @@ Lebenspunkte-Zähler für Commander-Runden, gedacht für den NFC-Tag im Commande
 - Spielende: Gewinner antippen, Dauer und Zeit je Spieler, Ergebnis teilen; öffnet sich von selbst, wenn nur noch einer übrig ist
 - Stammspieler mit Farbe und Deck merken und per Tipp auf einen freien Platz setzen; Statistik der Siege je Spieler und Deck
 - Würfel (W6, W20), Münze, Startspieler, Rückgängig; der Bildschirm bleibt ab Werk an
-- Kurzanleitung beim ersten Start, Hinweis zum Speichern als App auf dem Home-Bildschirm
+- Kurzanleitung beim ersten Start; bebilderte Anleitung „Als App einrichten“ für iPhone/iPad und Android (Android: direkt installieren, wenn der Browser es anbietet)
 - Statistik und Stammspieler als Datei sichern und wieder einlesen
 - Läuft komplett im Browser, auch offline; der Spielstand bleibt nur auf dem Gerät
 - Lädt nichts von fremden Servern: Die Schriften liegen im Ordner `fonts/` (SIL Open Font License, siehe `fonts/LIZENZ.txt`)
